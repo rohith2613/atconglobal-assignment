@@ -1,0 +1,14 @@
+node_modules/
+.next/
+out/
+data/
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets. Copy .env.example to .env and add your key.
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
