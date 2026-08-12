@@ -1,0 +1,46 @@
+Nordwind Logistics AS — Process Walkthrough (session 2)
+Microsoft Teams meeting transcript (auto-generated, lightly cleaned)
+Participants: Erik Sørensen (Quotation Desk Lead, Bergen), Priya Nair (Head of Operations), Tom De Vries (IT Lead), Johan Bakker (Sales, Oslo), Sanne Bakker (ATCON), Deepak Rao (ATCON)
+
+[00:00:08] Sanne Bakker: Erik, I'd like you to talk us through a quote from the moment it arrives. Don't tidy it up.
+[00:00:16] Erik Sørensen: All right. It arrives in the shared mailbox, quotes@nordwind. That's the front door. Everything comes in there — new enquiries, replies to old quotes, carrier rate updates, spam.
+[00:00:33] Erik Sørensen: First job in the morning is somebody triages that mailbox. Works out what's actually an enquiry and who should take it. That's usually me, takes about forty minutes.
+[00:00:47] Deepak Rao: How do you assign it?
+[00:00:50] Erik Sørensen: I drag it into a subfolder with the person's name on it. That's the assignment. There's no other record of it.
+[00:01:01] Erik Sørensen: Then whoever's got it has to work out whether we've quoted this customer for this lane before. Because if we have, we should be consistent. So they search Outlook. That's genuinely the process — search your own sent items and hope.
+[00:01:22] Sanne Bakker: How long does that take?
+[00:01:25] Erik Sørensen: Ten minutes if you find it. Twenty if you don't and you go and ask the person who might have done it.
+[00:01:34] Erik Sørensen: Then the pricing. Open NordQuote, find the lane, pull the base rate. Then you go to the carrier rate sheet, which is a spreadsheet on SharePoint, because NordQuote's rates are only updated quarterly and the carriers change theirs monthly.
+[00:01:56] Deepak Rao: So NordQuote's rates are out of date.
+[00:02:00] Erik Sørensen: Always. Everyone knows not to trust them. You use it for the structure and you get the actual numbers from the sheet.
+[00:02:10] Tom De Vries: Which is the root of most of what's wrong here, honestly. There's no single place where a rate is correct.
+[00:02:19] Erik Sørensen: Then haulage at both ends, which depends on the postcode, and that's a different sheet. Customs clearance is a flat fee unless it's out of the EEA. Then whatever surcharges are live — there's a bunker adjustment that moves monthly and a congestion surcharge on Rotterdam that's been on for eight months.
+[00:02:44] Erik Sørensen: You put all that in an Excel template, it works out the total, you copy it into an email.
+[00:02:53] Sanne Bakker: And then it goes to Marta.
+[00:02:56] Erik Sørensen: Then it goes to Marta. In an email. With the spreadsheet attached.
+[00:03:03] Erik Sørensen: She replies approved, or she asks a question, and if she asks a question that's another day gone because now it's a conversation.
+[00:03:14] Johan Bakker: From my side that's where it dies. I've got a customer on the phone asking where their quote is and I have no idea. I email Erik, Erik emails Marta, Marta's in a meeting.
+[00:03:29] Johan Bakker: I've started just quoting things myself for the small stuff. I know I shouldn't.
+[00:03:36] Priya Nair: You shouldn't.
+[00:03:38] Johan Bakker: I know. But a customer isn't going to wait two days for a price on one pallet.
+[00:03:45] Sanne Bakker: How much of the volume is small like that?
+[00:03:49] Erik Sørensen: Most of it by count. A big chunk of what we quote is groupage under a thousand euros. It's maybe a tenth of the value and most of the effort.
+[00:04:03] Deepak Rao: What about the exceptions? What breaks the standard path?
+[00:04:08] Erik Sørensen: Dangerous goods — that needs a different set of questions and a specialist carrier. Temperature controlled, same. Anything going out of the EEA needs the customs piece done properly rather than as a flat fee. Project cargo, which is out-of-gauge stuff, that's bespoke every time.
+[00:04:32] Erik Sørensen: And tenders. Where a customer says price me these sixty lanes for the year. Those take a week and there's no template for them at all.
+[00:04:44] Sanne Bakker: How often does each of those come up?
+[00:04:48] Erik Sørensen: Dangerous goods, a couple a week. Out of EEA, maybe a fifth of everything. Project cargo, once a month. Tenders, a handful a year but they're most of the revenue when we win them.
+[00:05:06] Deepak Rao: Tom, what does Winfreight expose? If we wanted to write a booking into it from a new system.
+[00:05:14] Tom De Vries: I'd need to check. I know there's something because the finance integration works, but I don't know what it is or who owns it. It's a vendor product, we're on their hosted version.
+[00:05:30] Tom De Vries: I'll find out. Don't build anything assuming it's easy.
+[00:05:36] Sanne Bakker: Understood. What about the timeline? Marta mentioned peak season last time.
+[00:05:43] Priya Nair: Look, realistically we're looking at Q1 next year. Nothing goes live in October — October is our busiest month, we can't have people learning a new system while they're doing twice the volume.
+[00:06:01] Priya Nair: I know there's pressure from the board on this. But operationally, Q1.
+[00:06:08] Tom De Vries: That's not what I heard on Monday.
+[00:06:11] Priya Nair: Then we need to have that conversation internally before you build anything to an October date.
+[00:06:19] Sanne Bakker: We'll flag it. Erik, one more — what would you actually want, if you could have anything?
+[00:06:27] Erik Sørensen: One place where a rate is right. That's it. Everything else follows from that.
+[00:06:35] Erik Sørensen: And I'd like to stop reconciling on a Friday. Two hours every week, and it only exists because we type everything twice.
+[00:06:46] Johan Bakker: I want to be able to look up a quote without emailing anybody.
+[00:06:52] Priya Nair: And I want to know what's sitting in the queue.
+[00:06:57] Sanne Bakker: Thank you. That's very clear.

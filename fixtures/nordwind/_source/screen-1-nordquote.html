@@ -1,0 +1,83 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>NordQuote</title><style>
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Tahoma, "Segoe UI", sans-serif; font-size:11px; background:#d4d0c8; color:#000; width:1100px; }
+  .titlebar { background:linear-gradient(#0a246a,#3a6ea5); color:#fff; padding:3px 6px; font-weight:bold; display:flex; justify-content:space-between; }
+  .titlebar span.btns { font-family:monospace; letter-spacing:2px; }
+  .menu { background:#d4d0c8; border-bottom:1px solid #808080; padding:2px 6px; }
+  .menu span { margin-right:14px; }
+  .menu u { text-decoration:underline; }
+  .toolbar { background:#d4d0c8; border-bottom:1px solid #808080; padding:3px 6px; }
+  .toolbar button { font-family:Tahoma; font-size:11px; border:1px solid #808080; background:#d4d0c8; padding:2px 8px; margin-right:3px; }
+  .body { padding:10px; }
+  fieldset { border:1px solid #808080; margin:0 0 10px 0; padding:8px; }
+  legend { font-weight:bold; padding:0 4px; }
+  table.form td { padding:2px 6px 2px 0; vertical-align:middle; }
+  input[type=text], select { font-family:Tahoma; font-size:11px; border:1px inset #808080; background:#fff; padding:1px 3px; }
+  .w160 { width:160px; } .w90 { width:90px; } .w240 { width:240px; }
+  .grid { width:100%; border-collapse:collapse; background:#fff; border:1px inset #808080; }
+  .grid th { background:#d4d0c8; border:1px solid #808080; padding:3px 5px; text-align:left; font-weight:bold; }
+  .grid td { border:1px solid #c0c0c0; padding:3px 5px; }
+  .grid td.num { text-align:right; font-family:"Courier New",monospace; }
+  .status { background:#d4d0c8; border-top:1px solid #fff; padding:3px 6px; display:flex; justify-content:space-between; color:#333; }
+  .warn { color:#8b0000; }
+  .cols { display:flex; gap:10px; }
+  .cols > * { flex:1; }
+  textarea { font-family:Tahoma; font-size:11px; border:1px inset #808080; width:100%; height:54px; }
+</style></head><body>
+<div class="titlebar"><span>NordQuote 2011 — [Quotation Entry] — connected: \\NW-FS01\Apps\NordQuote_be.mdb</span><span class="btns">_ □ ✕</span></div>
+<div class="menu"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>R</u>ecords</span><span><u>T</u>ools</span><span><u>W</u>indow</span><span><u>H</u>elp</span></div>
+<div class="toolbar">
+  <button>New Quote</button><button>Find</button><button>Save</button><button>Print Quote Doc</button><button>Rate Lookup</button><button>Close</button>
+</div>
+<div class="body">
+  <fieldset><legend>Quotation Header</legend>
+    <table class="form"><tr>
+      <td>Quote Ref</td><td><input type="text" class="w90" value="RFQ-1041"></td>
+      <td>Date</td><td><input type="text" class="w90" value="02/06/2026"></td>
+      <td>Clerk</td><td><input type="text" class="w90" value="E.SORENSEN"></td>
+      <td>Status</td><td><select class="w160"><option>04 - AWAITING APPROVAL</option></select></td>
+    </tr><tr>
+      <td>Customer</td><td colspan="3"><input type="text" class="w240" value="LOFOTEN MARINE AS"></td>
+      <td>Cust No</td><td><input type="text" class="w90" value="C-2214"></td>
+      <td>Salesperson</td><td><input type="text" class="w160" value="J.BAKKER"></td>
+    </tr><tr>
+      <td>Origin</td><td><input type="text" class="w160" value="BERGEN (NOBGO)"></td>
+      <td>Destination</td><td><input type="text" class="w160" value="ROTTERDAM (NLRTM)"></td>
+      <td>Mode</td><td><select class="w90"><option>SEA LCL</option></select></td>
+      <td>Incoterm</td><td><input type="text" class="w90" value="DAP"></td>
+    </tr></table>
+  </fieldset>
+  <div class="cols">
+    <fieldset style="flex:2"><legend>Rate Components</legend>
+      <table class="grid">
+        <tr><th style="width:40%">Component</th><th>Source</th><th>Basis</th><th style="width:90px">Amount EUR</th></tr>
+        <tr><td>Base sea freight</td><td>NORDQUOTE TARIFF Q1-2026</td><td>per w/m</td><td class="num">2,140.00</td></tr>
+        <tr><td>Origin haulage — Bergen</td><td>MANUAL ENTRY</td><td>per trip</td><td class="num">610.00</td></tr>
+        <tr><td>Destination haulage — Rotterdam</td><td>MANUAL ENTRY</td><td>per trip</td><td class="num">545.00</td></tr>
+        <tr><td>Customs clearance</td><td>FLAT</td><td>per decl</td><td class="num">95.00</td></tr>
+        <tr><td>Documentation</td><td>FLAT</td><td>per shpt</td><td class="num">45.00</td></tr>
+        <tr><td>BAF (bunker adjustment)</td><td>MANUAL ENTRY</td><td>%</td><td class="num">312.00</td></tr>
+        <tr><td>Rotterdam congestion surcharge</td><td>MANUAL ENTRY</td><td>flat</td><td class="num">180.00</td></tr>
+        <tr><td colspan="3" style="text-align:right;font-weight:bold">TOTAL</td><td class="num" style="font-weight:bold">3,927.00</td></tr>
+      </table>
+      <p class="warn" style="margin:6px 0 0 0">⚠ Tariff table last updated 04/01/2026 (Q1). Verify current carrier rates before issue.</p>
+    </fieldset>
+    <fieldset><legend>Notes (free text)</legend>
+      <textarea>chased Marta 3/6 - no reply yet
+customer asked twice, Johan aware
+rate from sheet not tariff - sheet says 2140, tariff says 1980, USED SHEET</textarea>
+      <table class="form" style="margin-top:6px"><tr><td>Valid until</td><td><input type="text" class="w90" value="16/06/2026"></td></tr>
+      <tr><td>Approved by</td><td><input type="text" class="w160" value=""></td></tr>
+      <tr><td>Approved date</td><td><input type="text" class="w90" value=""></td></tr></table>
+    </fieldset>
+  </div>
+  <fieldset><legend>Previous quotations for this customer</legend>
+    <table class="grid">
+      <tr><th>Ref</th><th>Date</th><th>Lane</th><th>Mode</th><th>Total</th><th>Outcome</th></tr>
+      <tr><td colspan="6" style="color:#666">No linked records. Search customer history in Outlook.</td></tr>
+    </table>
+  </fieldset>
+</div>
+<div class="status"><span>Record 1041 of 8,842 &nbsp;|&nbsp; Filtered: No &nbsp;|&nbsp; Locked by: (none)</span><span>NUM &nbsp; CAPS &nbsp; 02/06/2026 09:14</span></div>
+</body></html>

@@ -23,13 +23,23 @@ type ScreenReading = z.infer<typeof ScreenReading>
 
 const SCREEN_SPEC = spec('screen_reading', ScreenReading)
 
-const SYSTEM = `You are a business analyst examining a screenshot of a client's EXISTING application during a discovery phase.
+const SYSTEM = `You are a business analyst examining a screenshot of a client's EXISTING application during a discovery phase. Your job is to read the process off the screen.
 
 Report only what is visibly present. Do not invent field names, do not guess at features that are not shown, and do not propose improvements — a later stage does that.
 
-frictionSignals: note concrete evidence of a painful process. Free-text fields where structured data belongs, statuses tracked in a comment box, obvious duplicate data entry, a spreadsheet embedded in a business application, manual reference numbers. If you see none, return an empty list rather than inventing one.
+workflowObservations: what the screen tells you about the order of work, who does what, and what is waiting on whom. Read the CONTENT, not just the widgets — folder names, counts, statuses, dates, notes and subject lines are usually more revealing than the layout.
 
-workflowObservations: what the screen tells you about the order of work and who does what.`
+frictionSignals: concrete visible evidence that this process is painful. Quote or name the specific thing you can see. Look hard for these — a screen a consultant was sent during discovery almost always contains several. Examples of what counts:
+- a general-purpose tool doing a business system's job (email folders used as a work queue, a spreadsheet used as a database, a notes box used to track status)
+- work visibly waiting on one person or one step, especially with a count attached
+- the same information appearing in two places, or re-keyed between systems
+- ad-hoc conventions that only work because someone remembers them: naming schemes, "do not use" markers, colour codes, version numbers in filenames
+- staleness or distrust of the data on screen: out-of-date warnings, overridden values, manual corrections
+- chasing and rework: repeated follow-ups, escalations, duplicated threads
+- fields that are free text where structured data plainly belongs
+- counts, backlogs or queues that look unmanaged
+
+Only report what you can actually see. If a screen genuinely shows a clean, well-supported process, return an empty list — but say so in workflowObservations rather than leaving both empty.`
 
 export async function parseScreenshot(
   name: string,

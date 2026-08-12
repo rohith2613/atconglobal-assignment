@@ -1,0 +1,84 @@
+{
+  "engagement": "Quote-to-Booking Modernisation",
+  "client": "Nordwind Logistics AS",
+  "synthetic": true,
+  "note": "This corpus is fictional, authored for this project to exercise the pipeline. Nordwind Logistics does not exist. The contradictions and gaps below are deliberate: a corpus without contradictions cannot demonstrate contradiction detection.",
+  "sources": [
+    {
+      "file": "transcript-kickoff.txt",
+      "type": "transcript",
+      "label": "Discovery kickoff — Teams transcript",
+      "note": "Business context, goal, the 'about forty users' figure."
+    },
+    {
+      "file": "transcript-followup.txt",
+      "type": "transcript",
+      "label": "Process walkthrough — Teams transcript",
+      "note": "Step-by-step current process, exceptions, the Q1 timeline statement."
+    },
+    {
+      "file": "whatsapp-ops-group.txt",
+      "type": "whatsapp",
+      "label": "Nordwind ops group — WhatsApp export",
+      "note": "Informal. Where the October deadline and the real frustration live."
+    },
+    {
+      "file": "quotation-sop-v3.2.pdf",
+      "type": "pdf",
+      "label": "QMS-04 Quotation Handling SOP v3.2",
+      "note": "The documented process, which differs from the actual one. States 12 desk staff across 3 branches."
+    },
+    {
+      "file": "call-with-erik.mp3",
+      "type": "audio",
+      "label": "Voice note from Erik Sørensen, quotation desk lead",
+      "note": "Real spoken audio, transcribed by whisper-1 at ingest. Generated with tts-1 from _source/call-script.txt."
+    },
+    {
+      "file": "screen-1-nordquote-quotation-entry.png",
+      "type": "screenshot",
+      "label": "NordQuote 2011 — quotation entry",
+      "note": "The legacy Access application. Note MANUAL ENTRY rate sources and the stale tariff warning."
+    },
+    {
+      "file": "screen-2-carrier-rate-sheet.png",
+      "type": "screenshot",
+      "label": "Carrier rate sheet — SharePoint Excel",
+      "note": "14 tabs, duplicate rows for the same lane, a note telling colleagues which row not to use."
+    },
+    {
+      "file": "screen-3-shared-quotes-mailbox.png",
+      "type": "screenshot",
+      "label": "quotes@nordwind.no shared mailbox",
+      "note": "The workflow is mailbox folders. '06 WAITING MARTA' has 14 items in it."
+    },
+    {
+      "file": "website.html",
+      "type": "website",
+      "label": "nordwind.no — public site",
+      "note": "Company vocabulary, lanes, sectors, and the public one-working-day response claim."
+    }
+  ],
+  "plantedContradictions": [
+    {
+      "id": "timeline",
+      "subject": "Go-live date",
+      "sideA": "WhatsApp, Tom De Vries: board wants it live before peak season, end of October, not negotiable",
+      "sideB": "Transcript 2, Priya Nair: realistically we're looking at Q1 next year, nothing goes live in October",
+      "whyItMatters": "No single document contains this. It exists only across the corpus, which is exactly why reading files one at a time misses it."
+    },
+    {
+      "id": "user-count",
+      "subject": "Number of users",
+      "sideA": "Transcript 1, Priya Nair: about forty users all in",
+      "sideB": "SOP PDF: the quotation desk comprises 12 staff across 3 branches",
+      "whyItMatters": "Licensing, training and rollout are all sized off this number."
+    }
+  ],
+  "plantedGaps": [
+    { "questionId": "CO1", "topic": "Data residency", "note": "Never mentioned in any source, despite a Norway/Netherlands split." },
+    { "questionId": "NF2", "topic": "Authentication and directory", "note": "Never mentioned. No source says how users will sign in." },
+    { "questionId": "IN2", "topic": "Winfreight integration mechanism", "note": "Winfreight is named repeatedly but Tom explicitly says he does not know what it exposes." },
+    { "questionId": "CM2", "topic": "Cost of the current process", "note": "Marta says she has no hard number; the win rate is unknown." }
+  ]
+}

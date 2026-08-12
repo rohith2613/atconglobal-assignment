@@ -1,0 +1,35 @@
+[03/06/2026, 08:41] Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.
+[03/06/2026, 08:42] Tom De Vries: morning. board paper went in last night
+[03/06/2026, 08:44] Priya Nair: and?
+[03/06/2026, 09:02] Tom De Vries: board signed off this morning. they want it live before peak season — that's end of October, not negotiable apparently
+[03/06/2026, 09:03] Priya Nair: 😐
+[03/06/2026, 09:04] Priya Nair: October is peak season. we cannot go live in peak season
+[03/06/2026, 09:05] Tom De Vries: I know
+[03/06/2026, 09:05] Tom De Vries: I said that
+[03/06/2026, 09:11] Erik Sørensen: what happens if we're not ready
+[03/06/2026, 09:14] Tom De Vries: nobody said. I think the date came from the budget cycle rather than from anything operational
+[03/06/2026, 09:16] Priya Nair: that's what I assumed. we need to unpick that before anyone commits to it externally
+[03/06/2026, 10:47] Erik Sørensen: separate thing — had another one this morning. quoted Hanseatic Chemicals 4,180 for the Bergen–Rotterdam run, Winfreight has it at 4,810
+[03/06/2026, 10:48] Erik Sørensen: somebody transposed it
+[03/06/2026, 10:49] Priya Nair: we honour the 4,180?
+[03/06/2026, 10:49] Erik Sørensen: we always do
+[03/06/2026, 10:52] Marta Lindqvist: that's the third this month
+[03/06/2026, 10:55] Marta Lindqvist: if we're typing every number twice this is going to keep happening and it's straight off the bottom line every time
+[03/06/2026, 11:20] Johan Bakker: Lofoten Marine chased me again about RFQ-1041. sent it Tuesday, no idea if it's been approved
+[03/06/2026, 11:22] Erik Sørensen: it's with Marta
+[03/06/2026, 11:23] Marta Lindqvist: it's in my inbox somewhere. there are 60 emails in there from this week
+[03/06/2026, 11:24] Johan Bakker: this is the bit that's killing us honestly. not the pricing, the not knowing
+[03/06/2026, 14:31] Tom De Vries: <Media omitted>
+[03/06/2026, 14:32] Tom De Vries: that's the rate sheet by the way. 14 tabs. one per carrier. nobody knows which one is current
+[03/06/2026, 14:35] Erik Sørensen: the one with the most recent date in the filename, usually
+[03/06/2026, 14:35] Erik Sørensen: usually
+[04/06/2026, 07:58] Priya Nair: Marta what's the budget position on this
+[04/06/2026, 08:30] Marta Lindqvist: there's an envelope agreed at board level, I'd rather not put a number in a group chat. talk offline
+[04/06/2026, 09:15] Tom De Vries: one thing we should think about — Rotterdam office runs on a different rate structure and different customs rules. if we build for Bergen only it won't work there
+[04/06/2026, 09:17] Priya Nair: agreed, all three branches or it's not worth doing
+[04/06/2026, 16:02] Erik Sørensen: two hours on the Friday reconciliation again. every week. two hours
+[04/06/2026, 16:04] Priya Nair: noted, and included in what I sent ATCON
+[05/06/2026, 11:09] Johan Bakker: quoted a pallet to Immingham myself this morning, customer had it in 20 minutes and booked it
+[05/06/2026, 11:10] Johan Bakker: I'm aware this is not the process
+[05/06/2026, 11:11] Priya Nair: 🙃
+[05/06/2026, 11:12] Marta Lindqvist: it's not the process but it's also the answer isn't it. small stuff shouldn't come to me at all

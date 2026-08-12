@@ -1,0 +1,48 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Carrier rate sheet</title><style>
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Calibri,"Segoe UI",sans-serif; font-size:12px; background:#f3f2f1; width:1180px; }
+  .ribbon { background:#217346; color:#fff; padding:6px 12px; font-size:13px; display:flex; justify-content:space-between; }
+  .fname { font-weight:600; }
+  .tabs2 { background:#fff; border-bottom:1px solid #d0d0d0; padding:4px 12px; font-size:12px; }
+  .tabs2 span { margin-right:16px; color:#444; }
+  .tabs2 span.on { border-bottom:2px solid #217346; font-weight:600; padding-bottom:3px; }
+  .formulabar { background:#fff; border-bottom:1px solid #d0d0d0; padding:4px 12px; font-family:Consolas,monospace; font-size:11px; color:#333; }
+  table { border-collapse:collapse; background:#fff; width:100%; }
+  th.col { background:#f3f2f1; border:1px solid #d0d0d0; color:#666; font-weight:normal; text-align:center; width:auto; }
+  td.rownum { background:#f3f2f1; border:1px solid #d0d0d0; color:#666; text-align:center; width:34px; }
+  td { border:1px solid #e1dfdd; padding:3px 6px; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .hdr td { background:#dbe5f1; font-weight:700; }
+  .stale { background:#ffe0e0; }
+  .note { background:#fff2cc; }
+  .sheettabs { background:#f3f2f1; border-top:1px solid #d0d0d0; padding:5px 12px; font-size:11px; }
+  .sheettabs span { display:inline-block; padding:3px 9px; margin-right:2px; border:1px solid #d0d0d0; border-bottom:none; background:#e6e6e6; color:#444; }
+  .sheettabs span.on { background:#fff; font-weight:700; color:#217346; }
+  .status { background:#217346; color:#fff; padding:4px 12px; font-size:11px; display:flex; justify-content:space-between; }
+</style></head><body>
+<div class="ribbon"><span class="fname">CARRIER RATES MASTER v14 FINAL FINAL 02-06-2026 (1).xlsx — SharePoint › Operations › Rates › Archive</span><span>Read-only — checked out to M.Lindqvist</span></div>
+<div class="tabs2"><span>File</span><span>Home</span><span class="on">Data</span><span>Review</span><span>View</span><span style="color:#a80000">⚠ Some external links could not be updated</span></div>
+<div class="formulabar">D14 &nbsp;&nbsp;|&nbsp;&nbsp; fx &nbsp; =IFERROR(VLOOKUP($B14,'SeaCargo Q2'!$A:$F,4,FALSE),VLOOKUP($B14,'[CARRIER RATES MASTER v13.xlsx]SeaCargo Q1'!$A:$F,4,FALSE))</div>
+<table>
+  <tr><th class="col"></th><th class="col">A</th><th class="col">B</th><th class="col">C</th><th class="col">D</th><th class="col">E</th><th class="col">F</th><th class="col">G</th><th class="col">H</th></tr>
+  <tr class="hdr"><td class="rownum">1</td><td>Carrier</td><td>Lane</td><td>Equip</td><td>Rate EUR</td><td>Basis</td><td>Valid from</td><td>Valid to</td><td>Updated by</td></tr>
+  <tr><td class="rownum">2</td><td>Sea-Cargo</td><td>NOBGO–NLRTM</td><td>LCL</td><td class="num">2,140.00</td><td>per w/m</td><td>01/05/2026</td><td>31/07/2026</td><td>E.Sorensen</td></tr>
+  <tr class="stale"><td class="rownum">3</td><td>Sea-Cargo</td><td>NOBGO–NLRTM</td><td>20DV</td><td class="num">1,980.00</td><td>per cntr</td><td>01/01/2026</td><td>31/03/2026</td><td>E.Sorensen</td></tr>
+  <tr><td class="rownum">4</td><td>NCL</td><td>NOOSL–DEHAM</td><td>LCL</td><td class="num">1,760.00</td><td>per w/m</td><td>01/05/2026</td><td>31/07/2026</td><td>A.Holm</td></tr>
+  <tr class="stale"><td class="rownum">5</td><td>DFDS</td><td>NOAES–GBIMM</td><td>TRAILER</td><td class="num">2,410.00</td><td>per unit</td><td>01/11/2025</td><td>28/02/2026</td><td>(blank)</td></tr>
+  <tr><td class="rownum">6</td><td>DFDS</td><td>NOAES–GBIMM</td><td>TRAILER</td><td class="num">2,585.00</td><td>per unit</td><td>01/03/2026</td><td>&nbsp;</td><td>J.Bakker?</td></tr>
+  <tr class="note"><td class="rownum">7</td><td colspan="8">^ two rows for the same lane — 2585 is the right one, do NOT use row 5. TW 12/05</td></tr>
+  <tr><td class="rownum">8</td><td>Sea-Cargo</td><td>NOBGO–DKAAR</td><td>LCL</td><td class="num">1,240.00</td><td>per w/m</td><td>01/05/2026</td><td>31/07/2026</td><td>E.Sorensen</td></tr>
+  <tr><td class="rownum">9</td><td>Samskip</td><td>NLRTM–GBIMM</td><td>LCL</td><td class="num">890.00</td><td>per w/m</td><td>15/04/2026</td><td>15/07/2026</td><td>T.deVries</td></tr>
+  <tr class="hdr"><td class="rownum">11</td><td colspan="8">SURCHARGES IN FORCE</td></tr>
+  <tr><td class="rownum">12</td><td>BAF</td><td>ALL SEA</td><td>—</td><td class="num">8.00%</td><td>of base</td><td>01/06/2026</td><td>30/06/2026</td><td>M.Lindqvist</td></tr>
+  <tr><td class="rownum">13</td><td>Congestion</td><td>NLRTM</td><td>—</td><td class="num">180.00</td><td>flat</td><td>01/11/2025</td><td>&nbsp;</td><td>M.Lindqvist</td></tr>
+  <tr class="note"><td class="rownum">14</td><td colspan="8">Rotterdam congestion still on since Nov — check w/ carrier whether it's actually still applying?? nobody has</td></tr>
+  <tr class="hdr"><td class="rownum">16</td><td colspan="8">HAULAGE — see 'Haulage NO' and 'Haulage NL' tabs, do not price from here</td></tr>
+</table>
+<div class="sheettabs">
+  <span>README</span><span class="on">SeaCargo Q2</span><span>SeaCargo Q1</span><span>NCL</span><span>DFDS</span><span>Samskip</span><span>Haulage NO</span><span>Haulage NL</span><span>Customs</span><span>Surcharges</span><span>OLD do not use</span><span>Marta working copy</span><span>Sheet14</span><span>+</span>
+</div>
+<div class="status"><span>Ready &nbsp;|&nbsp; 14 sheets &nbsp;|&nbsp; Last saved by E.Sorensen 02/06/2026 08:51 &nbsp;|&nbsp; 3 external links broken</span><span>100%</span></div>
+</body></html>

@@ -1,0 +1,51 @@
+Nordwind Logistics AS — Discovery Kickoff
+Microsoft Teams meeting transcript (auto-generated, lightly cleaned)
+Participants: Priya Nair (Head of Operations, Nordwind), Marta Lindqvist (Commercial Director, Nordwind), Tom De Vries (IT Lead, Nordwind Rotterdam), Sanne Bakker (ATCON), Deepak Rao (ATCON)
+
+[00:00:04] Sanne Bakker: Thanks everyone. Before we get into anything technical I'd like to just understand the business. Priya, can you walk me through what Nordwind actually does?
+[00:00:19] Priya Nair: Sure. We're a freight forwarder. Sea and road mostly, some air but it's marginal. Head office is Bergen, we've got Oslo and a Rotterdam office. Customers come to us with a shipment and we arrange it end to end — booking the carrier, the customs paperwork, the warehousing if they need it.
+[00:00:45] Priya Nair: The bit that's hurting is the front end of that. Getting a price back to the customer.
+[00:00:52] Sanne Bakker: Tell me about that.
+[00:00:55] Priya Nair: A customer emails us, or phones, and says I've got forty pallets going from Bergen to Rotterdam, week after next, what's it going to cost. And then somebody on the quotation desk has to go and work that out.
+[00:01:14] Priya Nair: And working it out means opening a spreadsheet, looking up the sea freight rate for that lane, adding the haulage at both ends, adding the customs clearance fee, checking whether there's a surcharge running this month, and typing it all into an email.
+[00:01:32] Priya Nair: That takes about two days. Sometimes three.
+[00:01:37] Deepak Rao: Two days from the enquiry landing to the customer having a number?
+[00:01:42] Priya Nair: Yes. And it isn't two days of work. It's twenty minutes of work sitting in a queue for two days.
+[00:01:52] Marta Lindqvist: And we lose business over it. That's the part I care about. If a customer sends the same enquiry to us and to two competitors and we come back third, we don't get the booking. It doesn't matter that our price was good.
+[00:02:11] Marta Lindqvist: I don't have a hard number for you but my sense is it's a meaningful share of what we quote.
+[00:02:19] Sanne Bakker: We'll want to come back to that number. Who does the quoting?
+[00:02:24] Priya Nair: The quotation desk. Erik runs it out of Bergen. There are people in Oslo and Rotterdam doing the same job for their local lanes.
+[00:02:36] Sanne Bakker: And how many people would end up using a system like this?
+[00:02:41] Priya Nair: About forty users all in, once you count the sales people and the branches. Not everyone's quoting but everyone wants to see where a quote has got to.
+[00:02:56] Tom De Vries: I'd want to push back slightly on forty. That's everyone with a login to anything. The people actually building quotes is a much smaller group.
+[00:03:08] Priya Nair: Well, they all need to see it.
+[00:03:11] Sanne Bakker: Noted, we'll firm that up. Tom, what have they got today, systems-wise?
+[00:03:18] Tom De Vries: The quoting itself is a Microsoft Access database from about 2011. We call it NordQuote. It holds the rate cards and it prints the quote document. It doesn't really do anything else.
+[00:03:35] Tom De Vries: Then there's Winfreight, which is the TMS. That's where a booking lives once it's actually a booking. Winfreight is the system of record for anything operational.
+[00:03:49] Tom De Vries: And there's a lot of Excel. More than I'd like to admit.
+[00:03:55] Deepak Rao: Does NordQuote talk to Winfreight?
+[00:03:59] Tom De Vries: No. Somebody re-keys it. When a quote is accepted, whoever's on the desk opens Winfreight and types the whole thing in again.
+[00:04:12] Deepak Rao: How often does that go wrong?
+[00:04:16] Priya Nair: Often enough that we check. Erik reconciles the accepted quotes against Winfreight every Friday afternoon. He finds two or three a week where something's off — wrong container type, wrong incoterm, a price that doesn't match what we sent the customer.
+[00:04:38] Marta Lindqvist: And when the price doesn't match, we honour what we sent. So that's straight off the margin.
+[00:04:47] Sanne Bakker: Marta, you mentioned approvals earlier.
+[00:04:51] Marta Lindqvist: Everything goes through me before it leaves the building. Every quote.
+[00:04:58] Sanne Bakker: Every quote, or quotes above a value?
+[00:05:02] Marta Lindqvist: Every quote. That was a decision we took after a bad year in 2019 where we underpriced a lot of work. It's the right control but I'll be honest, I'm the reason some of those two days are two days. I was on a flight last Tuesday and nothing went out until Wednesday evening.
+[00:05:26] Priya Nair: It's not sustainable. Marta shouldn't be reading a quote for four hundred euros of groupage.
+[00:05:34] Marta Lindqvist: No. But somebody has to look at the four hundred thousand euro tender.
+[00:05:41] Sanne Bakker: That's a useful distinction. What happens to a quote after you send it?
+[00:05:47] Priya Nair: Honestly? Not much. It's in the sent items of whoever sent it. If the customer comes back a week later and asks about it, we search Outlook.
+[00:06:00] Priya Nair: We don't have a proper view of what's outstanding. I couldn't tell you right now how many live quotes we have or what they're worth.
+[00:06:12] Marta Lindqvist: Which means I can't forecast. I'd like to be able to say to the board, we have this much in the pipeline, historically we win this proportion of it.
+[00:06:26] Deepak Rao: Do you know your win rate today?
+[00:06:29] Marta Lindqvist: No.
+[00:06:32] Sanne Bakker: What about the customer's side of it — do they ever see anything other than the email?
+[00:06:39] Priya Nair: No. Email only. Some of the bigger accounts have asked for a portal and we've always said it's on the roadmap.
+[00:06:50] Tom De Vries: It has been on the roadmap since I joined.
+[00:06:55] Sanne Bakker: Is a customer portal in scope for this?
+[00:07:00] Marta Lindqvist: Let's park it. I want the internal thing working first. If we can't get a quote out in a day, giving the customer a window onto that isn't going to help us.
+[00:07:14] Sanne Bakker: Agreed. Last one from me for today — what does good look like? If we come back in a year and this has worked, what's different?
+[00:07:26] Priya Nair: A quote goes out the same day. Erik isn't reconciling anything on a Friday. And when Marta asks what's outstanding, somebody can answer her in ten seconds instead of two hours.
+[00:07:44] Marta Lindqvist: And I'm looking at the quotes that matter, not all of them.
+[00:07:50] Sanne Bakker: That's helpful. We'll pull the process apart properly next session.
