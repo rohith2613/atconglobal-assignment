@@ -43,6 +43,27 @@ export const config = {
   audioModel: env('MODEL_AUDIO', 'whisper-1'),
   embedModel: env('MODEL_EMBED', 'text-embedding-3-small'),
 
+  /**
+   * Output ceiling per role, sized to what a correct answer actually needs.
+   *
+   * A single global ceiling was a mistake. Set low it truncated real answers;
+   * set to the model maximum of 32k it let the POC stage generate for over ten
+   * minutes before anything noticed — the failure never arrived, so the retry
+   * that handles truncation never got the chance to fire. A ceiling near the
+   * expected size converts a runaway into a fast, retryable truncation.
+   */
+  maxOutputTokens: {
+    router: 4_000,
+    extractor: 12_000,
+    synthesizer: 20_000,
+    critic: 4_000,
+    vision: 4_000,
+    poc: 10_000,
+  } satisfies Record<Role, number>,
+
+  /** Hard deadline per request. Nothing here should ever take three minutes. */
+  requestTimeoutMs: envInt('REQUEST_TIMEOUT_MS', 180_000),
+
   concurrency: envInt('CONCURRENCY', 6),
   maxAttempts: envInt('MAX_ATTEMPTS', 3),
 

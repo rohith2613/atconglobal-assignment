@@ -46,7 +46,22 @@ export async function runLoop<T>(args: LoopArgs<T>): Promise<LoopResult<T>> {
     attempt += 1
     onEvent({ t: 'attempt', stage, attempt })
 
-    const value = await args.generate(feedback, attempt)
+    let value: T
+    try {
+      value = await args.generate(feedback, attempt)
+    } catch (err) {
+      // A model that overran its output budget or produced a shape Zod rejected
+      // has failed in exactly the way this loop exists to absorb. Letting it
+      // propagate would throw away seven completed stages over one oversized
+      // response — the "do not hard-fail on the first bad output" principle
+      // applied to the generate step and not just the validate step.
+      const retryable = retryableFeedback(err, attempt)
+      if (!retryable || attempt >= maxAttempts) throw err
+      feedback = retryable
+      onEvent({ t: 'retry', stage, attempt, because: describe(err) })
+      continue
+    }
+
     const violations = await args.validate(value)
     onEvent({ t: 'validated', stage, attempt, violations })
 
@@ -107,6 +122,56 @@ export async function runLoop<T>(args: LoopArgs<T>): Promise<LoopResult<T>> {
   const result = best!
   onEvent({ t: 'abandoned', stage, attempts: attempt, violations: result.violations })
   return { value: result.value, attempts: attempt, needsHumanReview: true, violations: result.violations }
+}
+
+const describe = (err: unknown) => (err instanceof Error ? `${err.name}: ${err.message.slice(0, 90)}` : String(err))
+
+/**
+ * Turns a generation-time error into an instruction for the next attempt, or
+ * null if it is not the kind of failure retrying can help with.
+ *
+ * Truncation and schema violations are the model's fault and a smaller, better
+ * shaped answer fixes them. Authentication, rate limits and network failures
+ * are not, and retrying them just burns the remaining attempts.
+ */
+function retryableFeedback(err: unknown, attempt: number): string | null {
+  if (!(err instanceof Error)) return null
+
+  if (err.name === 'TruncationError') {
+    return [
+      `Attempt ${attempt} ran past the output limit and was discarded.`,
+      '',
+      'Produce a SUBSTANTIALLY SMALLER answer. Keep the same structure and quality, but cut the volume hard:',
+      '- fewer items in every list, and no list longer than 8 entries',
+      '- tables: 5 rows, not 20',
+      '- shorter descriptive text everywhere',
+      '',
+      'A complete small answer is worth far more than a large one that gets cut off, because a cut-off one is discarded entirely.',
+    ].join('\n')
+  }
+
+  if (err.name === 'APIConnectionTimeoutError' || /timed? ?out|aborted/i.test(err.message)) {
+    // With output ceilings in place, a request that runs past its deadline is
+    // almost always a runaway generation rather than a network fault, so the
+    // useful retry is a smaller one.
+    return [
+      `Attempt ${attempt} ran past its deadline and was cancelled.`,
+      '',
+      'Produce a much shorter answer. Halve the number of items in every list and keep all descriptive text to one sentence.',
+    ].join('\n')
+  }
+
+  if (err.name === 'SchemaViolationError') {
+    return [
+      `Attempt ${attempt} did not match the required output shape and was discarded.`,
+      '',
+      `The validator reported: ${err.message}`,
+      '',
+      'Return the same content in the exact shape the schema requires.',
+    ].join('\n')
+  }
+
+  return null
 }
 
 function criticFeedback(verdict: CriticVerdict, attempt: number): string {

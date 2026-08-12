@@ -75,6 +75,45 @@ export function candidatePairs(
 const sourceOf = (signalId: string) => signalId.split(':')[0]
 
 /**
+ * Cross-source pairs that are about the same thing but were NOT merged.
+ *
+ * This reuses the embeddings computed for deduplication, and the insight is
+ * that the two questions are the same question asked twice: two signals from
+ * different sources that are semantically close are either the same claim — in
+ * which case they merge — or they are two sources saying different things about
+ * one subject, which is exactly a contradiction.
+ *
+ * Handing the detector this shortlist matters because recall was unstable
+ * without it. Asked to scan 175 signals and 230 evidence units in one call, the
+ * model found four contradictions on one run and one on the next; the finding
+ * was there both times, the attention was not. The threshold is lower and the
+ * type constraint is dropped relative to merging, because a contradiction can
+ * sit across types — a METRIC against a CONSTRAINT — where a merge never could.
+ */
+export function contradictionCandidates(
+  signals: Signal[],
+  vectors: number[][],
+  mergedAway: Set<string>,
+  threshold = 0.72,
+  limit = 40,
+): { a: Signal; b: Signal; score: number }[] {
+  const out: { a: Signal; b: Signal; score: number }[] = []
+
+  for (let i = 0; i < signals.length; i++) {
+    if (mergedAway.has(signals[i].id)) continue
+    for (let j = i + 1; j < signals.length; j++) {
+      if (mergedAway.has(signals[j].id)) continue
+      if (sourceOf(signals[i].id) === sourceOf(signals[j].id)) continue
+
+      const score = cosine(vectors[i], vectors[j])
+      if (score >= threshold) out.push({ a: signals[i], b: signals[j], score })
+    }
+  }
+
+  return out.sort((x, y) => y.score - x.score).slice(0, limit)
+}
+
+/**
  * Confidence, recomputed after merging.
  *
  * The semantic is deliberate and narrow: **HIGH means more than one independent
@@ -200,6 +239,7 @@ export async function reconcile(args: {
   })
 
   let merged = signals.map((s) => ({ ...s, confidence: scoreConfidence(s, corpus) }))
+  const mergedAway = new Set<string>()
 
   if (pairs.length > 0) {
     const rendered = pairs
@@ -222,6 +262,7 @@ export async function reconcile(args: {
     })
 
     merged = applyMerges(signals, data.merges, corpus)
+    for (const m of data.merges) mergedAway.add(m.dropId)
     onEvent({
       t: 'note',
       stage: 'reconcile',
@@ -263,15 +304,31 @@ export async function reconcile(args: {
     )
     .join('\n\n')
 
+  const candidates = contradictionCandidates(signals, vectors, mergedAway)
+  onEvent({
+    t: 'note',
+    stage: 'reconcile',
+    text: `${candidates.length} cross-source pairs about the same subject that were not merged — checking these first`,
+  })
+
+  const candidateBlock = candidates.length
+    ? candidates
+        .map(
+          ({ a, b }, n) =>
+            `${n + 1}.  ${a.id} (${sourceLabel(a)}) — ${a.statement}\n    vs ${b.id} (${sourceLabel(b)}) — ${b.statement}`,
+        )
+        .join('\n')
+    : '(none)'
+
   const { data } = await llm.complete<{ conflicts: Conflict[] }>({
     role: 'synthesizer',
     stage: 'reconcile',
     runId,
     engagementId,
     system: CONFLICT_SYSTEM,
-    user: `Below is the client's discovery pack: first the raw evidence, then the signals extracted from it.
+    user: `Below is the client's discovery pack: the raw evidence, the signals extracted from it, and a shortlist of pairs worth examining first.
 
-Quote ONLY from the EVIDENCE section. Your quotes are checked character by character against it, and a contradiction whose quote cannot be found is discarded even if the finding is correct.
+Quote ONLY from the EVIDENCE section. Your quotes are checked character by character against it, and a contradiction whose quote cannot be found is discarded even if the finding itself is correct.
 
 ════ EVIDENCE ════
 
@@ -281,9 +338,15 @@ ${evidenceBlock}
 
 ${signalBlock}
 
+════ PAIRS TO CHECK FIRST ════
+
+These come from DIFFERENT sources and are about the same subject, but a deduplication pass decided they are not the same claim. Each is therefore either a genuine distinction or a contradiction. Work through them one by one before looking anywhere else.
+
+${candidateBlock}
+
 ════
 
-Signals sharing a subject are the likeliest place to find a disagreement, but check across subjects too. For each contradiction, cite the evidence ids and copy the exact text from the EVIDENCE section above.`,
+Now report the contradictions. Check the shortlist above first, then scan the full signal list for anything it missed. For each one, cite the evidence ids and copy the exact text from the EVIDENCE section.`,
     schema: CONFLICTS_SPEC,
     summary: `find contradictions across ${merged.length} signals, ${citedIds.length} evidence units`,
   })

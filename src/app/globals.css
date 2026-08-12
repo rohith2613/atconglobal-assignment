@@ -1,3 +1,311 @@
 @import 'tailwindcss';
 
-/* Design tokens land here in Task 12. */
+/*
+  Prism — a consulting workbench.
+
+  Design thesis: this is a CRITICAL EDITION of a client's requirements. A
+  critical edition is a text where every claim carries its provenance and where
+  variant readings — here, contradictions between sources — are recorded in an
+  apparatus alongside the main text. That is exactly what this application is,
+  so the whole visual system is built from it.
+
+  Three type roles, each meaning something rather than decorating something:
+    mono  — the apparatus: evidence ids, locators, metadata, counts
+    serif — the client's own words: quotes and synthesised prose
+    sans  — the tool's own chrome: navigation, buttons, labels
+
+  Colour: deep ink blue-black, not neutral near-black, with PAPER-WARM
+  foreground text rather than pure white. Ink on coated stock, not glow on
+  glass. Archival ochre marks evidence; a muted teal carries structure. The
+  semantic flags are desaturated so they read as stamps, not traffic lights.
+*/
+
+@theme {
+  --color-ink-950: #080a0e;
+  --color-ink-900: #0c0f14;
+  --color-ink-850: #10141a;
+  --color-ink-800: #12161d;
+  --color-ink-750: #161b23;
+  --color-ink-700: #191f28;
+  --color-ink-650: #1e2530;
+  --color-ink-600: #222a35;
+  --color-ink-500: #2c3542;
+  --color-ink-400: #3a4553;
+
+  --color-paper-100: #e8e4da;
+  --color-paper-200: #cfccc4;
+  --color-paper-300: #a8a79f;
+  --color-paper-400: #85868a;
+  --color-paper-500: #6e7079;
+
+  --color-amber-300: #e8bd६6;
+  --color-amber-400: #d9a441;
+  --color-amber-500: #b8863099;
+  --color-amber-wash: #3a2e17;
+
+  --color-teal-300: #86c9d6;
+  --color-teal-400: #5fb3c4;
+  --color-teal-600: #2d5a63;
+
+  --color-flag-red: #c9705f;
+  --color-flag-amber: #c9a227;
+  --color-flag-green: #6fa88a;
+  --color-flag-violet: #8f7fb8;
+
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Segoe UI Mono', Menlo, Consolas, monospace;
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+}
+
+:root {
+  --ink-950: #080a0e;
+  --ink-900: #0c0f14;
+  --ink-850: #10141a;
+  --ink-800: #12161d;
+  --ink-750: #161b23;
+  --ink-700: #191f28;
+  --ink-650: #1e2530;
+  --ink-600: #222a35;
+  --ink-500: #2c3542;
+  --ink-400: #3a4553;
+
+  --paper-100: #e8e4da;
+  --paper-200: #cfccc4;
+  --paper-300: #a8a79f;
+  --paper-400: #85868a;
+  --paper-500: #6e7079;
+
+  --amber-300: #e8bd66;
+  --amber-400: #d9a441;
+  --amber-wash: #3a2e17;
+
+  --teal-300: #86c9d6;
+  --teal-400: #5fb3c4;
+  --teal-600: #2d5a63;
+
+  --flag-red: #c9705f;
+  --flag-amber: #c9a227;
+  --flag-green: #6fa88a;
+  --flag-violet: #8f7fb8;
+
+  --mono: ui-monospace, 'SF Mono', 'Cascadia Code', 'Segoe UI Mono', Menlo, Consolas, monospace;
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, system-ui, sans-serif;
+
+  --rail: 208px;
+  --radius: 3px;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--ink-900);
+  color: var(--paper-200);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--amber-wash);
+  color: var(--paper-100);
+}
+
+/* ---- the apparatus -------------------------------------------------------
+   Small, letterspaced, uppercase mono. Everything that is metadata about the
+   content rather than the content itself wears this. */
+
+.ap {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--paper-500);
+  font-weight: 500;
+}
+
+.ap-lg {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--paper-400);
+}
+
+/* Evidence ids, locators, quote references — mono but not shouting. */
+.id {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.01em;
+  color: var(--paper-400);
+}
+
+/* ---- the client's own words ---------------------------------------------- */
+
+.prose-client {
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.62;
+  color: var(--paper-100);
+}
+
+.quote {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--paper-200);
+  font-style: italic;
+}
+
+/* ---- headings ------------------------------------------------------------ */
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: var(--paper-100);
+  font-weight: 600;
+  line-height: 1.25;
+}
+h1 {
+  font-size: 21px;
+  letter-spacing: -0.01em;
+}
+h2 {
+  font-size: 16px;
+}
+h3 {
+  font-size: 14px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---- focus ---------------------------------------------------------------
+   One ring, everywhere, always visible. Never removed. */
+
+:focus-visible {
+  outline: 2px solid var(--teal-400);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* ---- scrollbars ---------------------------------------------------------- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-500) transparent;
+}
+*::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--ink-500);
+  border-radius: 5px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-400);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- the signature: citation → evidence ----------------------------------
+   A citation chip is set like a footnote marker in the client's prose: mono,
+   ochre, slightly raised. Clicking it turns to the source. */
+
+.cite {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 2.5px 5px 2.5px 4px;
+  margin-left: 4px;
+  vertical-align: 2px;
+  color: var(--amber-400);
+  background: color-mix(in srgb, var(--amber-wash) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--amber-400) 26%, transparent);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 140ms ease-out, border-color 140ms ease-out, color 140ms ease-out;
+}
+.cite:hover {
+  background: var(--amber-wash);
+  border-color: color-mix(in srgb, var(--amber-400) 55%, transparent);
+  color: var(--amber-300);
+}
+
+/* The cited span, once you have turned to it. An ink bloom, not a highlighter. */
+.evidence-hit {
+  background: var(--amber-wash);
+  color: var(--paper-100);
+  box-shadow: inset 2px 0 0 var(--amber-400);
+  padding: 1px 0 1px 6px;
+  margin-left: -6px;
+  border-radius: 0 2px 2px 0;
+  animation: bloom 460ms ease-out;
+}
+
+@keyframes bloom {
+  from {
+    background: transparent;
+    box-shadow: inset 2px 0 0 transparent;
+  }
+}
+
+/* ---- utilities ----------------------------------------------------------- */
+
+.rule {
+  border: 0;
+  border-top: 1px solid var(--ink-600);
+  margin: 0;
+}
+
+.panel {
+  background: var(--ink-800);
+  border: 1px solid var(--ink-600);
+  border-radius: var(--radius);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

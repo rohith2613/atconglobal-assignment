@@ -123,6 +123,20 @@ export class Corpus {
   }
 
   /**
+   * Which unit, anywhere in the corpus, actually contains this quote.
+   *
+   * Used to turn a QUOTE_MISMATCH from a dead end into a one-line correction.
+   * The commonest form of that violation is not fabrication at all — the model
+   * quoted something real and attached the wrong evidence id. Telling it which
+   * id the words came from fixes that in one attempt; telling it only that the
+   * quote was wrong invites it to invent a different quote instead.
+   */
+  findQuote(quote: string): EvidenceUnit | undefined {
+    if (normaliseForCompare(quote).length < 8) return undefined
+    return this.units.find((u) => containsQuote(this.norm(u.id), quote))
+  }
+
+  /**
    * Full text of a source with ids attached. Handed to the extractor, which
    * needs the exact words in order to quote them.
    */

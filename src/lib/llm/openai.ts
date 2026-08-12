@@ -10,8 +10,6 @@ import {
   TruncationError,
 } from './types'
 
-const MAX_OUTPUT_TOKENS = 16_000
-
 let counter = 0
 function traceId(): string {
   counter += 1
@@ -45,18 +43,23 @@ export class OpenAiClient implements LlmClient {
 
     let response: OpenAI.Chat.ChatCompletion
     try {
-      response = await this.client.chat.completions.create({
-        model,
-        max_completion_tokens: MAX_OUTPUT_TOKENS,
-        messages: [
-          { role: 'system', content: args.system },
-          { role: 'user', content },
-        ],
-        response_format: {
-          type: 'json_schema',
-          json_schema: { name: args.schema.name, schema: args.schema.json, strict: true },
+      response = await this.client.chat.completions.create(
+        {
+          model,
+          max_completion_tokens: config.maxOutputTokens[args.role],
+          messages: [
+            { role: 'system', content: args.system },
+            { role: 'user', content },
+          ],
+          response_format: {
+            type: 'json_schema',
+            json_schema: { name: args.schema.name, schema: args.schema.json, strict: true },
+          },
         },
-      })
+        // A request with no deadline is a hang waiting to happen: a stage that
+        // never returns never fails, so nothing downstream ever gets to retry it.
+        { timeout: config.requestTimeoutMs },
+      )
     } catch (err) {
       this.fail(args, model, attempt, started, err)
       throw err

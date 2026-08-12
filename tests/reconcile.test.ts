@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { cosine, candidatePairs, scoreConfidence, discardReason } from '@/lib/pipeline/reconcile'
+import {
+  cosine,
+  candidatePairs,
+  scoreConfidence,
+  discardReason,
+  contradictionCandidates,
+} from '@/lib/pipeline/reconcile'
 import { mapWithConcurrency, STAGES, STAGE_LABEL } from '@/lib/pipeline/events'
 import { Corpus } from '@/lib/evidence'
 import type { Conflict, Signal } from '@/lib/schema/signals'
@@ -62,6 +68,60 @@ describe('candidatePairs', () => {
       [0, 2],
       [1, 2],
     ])
+  })
+})
+
+describe('contradictionCandidates', () => {
+  // Reuses the dedup embeddings: a cross-source pair that is semantically close
+  // but was NOT merged is either a genuine distinction or a contradiction.
+  const sigs = [
+    sig('sA:1', 'METRIC', 'about forty users all in'),
+    sig('sB:1', 'METRIC', 'the desk is twelve staff across three branches'),
+    sig('sC:1', 'CONSTRAINT', 'approval must remain for large quotes'),
+  ]
+  const vecs = [
+    [1, 0],
+    [0.95, 0.31],
+    [0, 1],
+  ]
+
+  it('surfaces close cross-source pairs the merge judge rejected', () => {
+    expect(contradictionCandidates(sigs, vecs, new Set()).map((c) => [c.a.id, c.b.id])).toEqual([
+      ['sA:1', 'sB:1'],
+    ])
+  })
+
+  it('crosses signal types, unlike merging — a METRIC can contradict a CONSTRAINT', () => {
+    const v = [
+      [1, 0],
+      [0, 1],
+      [0.97, 0.24],
+    ]
+    expect(contradictionCandidates(sigs, v, new Set()).map((c) => [c.a.type, c.b.type])).toEqual([
+      ['METRIC', 'CONSTRAINT'],
+    ])
+  })
+
+  it('skips signals that were merged away, which are no longer distinct claims', () => {
+    expect(contradictionCandidates(sigs, vecs, new Set(['sB:1']))).toEqual([])
+  })
+
+  it('never pairs within one source', () => {
+    const same = [sig('sA:1', 'METRIC', 'x'), sig('sA:2', 'METRIC', 'y')]
+    expect(contradictionCandidates(same, [[1, 0], [1, 0]], new Set())).toEqual([])
+  })
+
+  it('returns the strongest pairs first and caps the list', () => {
+    const many = ['a', 'b', 'c', 'd'].map((x) => sig(`s${x}:1`, 'METRIC', x))
+    const v = [
+      [1, 0],
+      [0.99, 0.14],
+      [0.9, 0.44],
+      [0.8, 0.6],
+    ]
+    const out = contradictionCandidates(many, v, new Set(), 0.72, 2)
+    expect(out).toHaveLength(2)
+    expect(out[0].score).toBeGreaterThanOrEqual(out[1].score)
   })
 })
 

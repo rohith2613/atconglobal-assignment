@@ -169,9 +169,12 @@ export const repo = {
       status?: SourceStatus
       meta?: Record<string, string | number>
       rawText?: string
+      /** Only for restoring a saved run: evidence ids embed the source id, so
+       *  a restored source MUST keep its original one or every citation breaks. */
+      forcedId?: string
     },
   ): string {
-    const sid = id('src')
+    const sid = s.forcedId ?? id('src')
     getDb()
       .prepare(
         `INSERT INTO sources (id, engagement_id, type, name, bytes, status, meta_json, raw_text, created_at)

@@ -12,7 +12,6 @@ import type { TraceSink } from './openai'
 
 const API = 'https://api.anthropic.com/v1/messages'
 const VERSION = '2023-06-01'
-const MAX_OUTPUT_TOKENS = 16_000
 
 let counter = 0
 const traceId = () => `tr_${Date.now().toString(36)}_${(counter += 1).toString(36)}`
@@ -63,6 +62,7 @@ export class AnthropicClient implements LlmClient {
 
     const res = await fetch(API, {
       method: 'POST',
+      signal: AbortSignal.timeout(config.requestTimeoutMs),
       headers: {
         'x-api-key': this.apiKey,
         'anthropic-version': VERSION,
@@ -70,7 +70,7 @@ export class AnthropicClient implements LlmClient {
       },
       body: JSON.stringify({
         model,
-        max_tokens: MAX_OUTPUT_TOKENS,
+        max_tokens: config.maxOutputTokens[args.role],
         system: args.system,
         messages: [{ role: 'user', content }],
         tools: [

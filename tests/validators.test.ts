@@ -264,6 +264,20 @@ describe('validateBrief — QUOTE_MISMATCH', () => {
     b.goal.citation.quote = 'nonsense that was never said'
     const found = validateBrief(b, corpus).find((v) => v.code === 'QUOTE_MISMATCH')
     expect(found?.detail).toContain('We quote everything by hand')
+    expect(found?.detail).toContain('no other evidence unit does either')
+  })
+
+  it('names the unit the quote REALLY came from when the words are just misattributed', () => {
+    // The commonest form of this violation is not fabrication: the model quoted
+    // something real and attached the wrong id. Naming the right one turns a
+    // dead end into a one-line correction; saying only "wrong" invites it to
+    // invent a different quote instead.
+    const b = goodBrief()
+    b.goal.citation.evidenceIds = ['E-s1-001']
+    b.goal.citation.quote = 'Everything goes through Marta before it leaves the building.'
+    const found = validateBrief(b, corpus).find((v) => v.code === 'QUOTE_MISMATCH')
+    expect(found?.detail).toContain('belongs to E-s1-004')
+    expect(found?.detail).toContain('Change the cited evidence id to E-s1-004')
   })
 
   it('accepts a faithful partial quote', () => {
@@ -697,6 +711,83 @@ describe('runLoop', () => {
       onEvent: (e) => events.push(e.t),
     })
     expect(events).toEqual(['attempt', 'validated', 'retry', 'attempt', 'validated', 'settled'])
+  })
+
+  it('absorbs a truncation and retries smaller instead of killing the run', async () => {
+    // Letting a TruncationError propagate would throw away seven completed
+    // stages over one oversized response. The "do not hard-fail on the first
+    // bad output" principle applies to the generate step, not just validate.
+    const seen: (string | null)[] = []
+    let n = 0
+    const r = await runLoop<string>({
+      stage: 'poc',
+      maxAttempts: 3,
+      generate: async (fb) => {
+        seen.push(fb)
+        n += 1
+        if (n === 1) {
+          const e = new Error('hit its output limit')
+          e.name = 'TruncationError'
+          throw e
+        }
+        return 'ok'
+      },
+      validate: () => [],
+    })
+    expect(r.value).toBe('ok')
+    expect(r.attempts).toBe(2)
+    expect(seen[1]).toContain('SUBSTANTIALLY SMALLER')
+  })
+
+  it('absorbs a schema violation the same way, passing the validator message on', async () => {
+    let n = 0
+    const seen: (string | null)[] = []
+    await runLoop<string>({
+      stage: 's',
+      maxAttempts: 2,
+      generate: async (fb) => {
+        seen.push(fb)
+        if (++n === 1) {
+          const e = new Error('screens: array must contain at least 2 elements')
+          e.name = 'SchemaViolationError'
+          throw e
+        }
+        return 'ok'
+      },
+      validate: () => [],
+    })
+    expect(seen[1]).toContain('at least 2 elements')
+  })
+
+  it('does NOT retry an auth or network failure — that just burns the attempts', async () => {
+    let n = 0
+    await expect(
+      runLoop<string>({
+        stage: 's',
+        maxAttempts: 3,
+        generate: async () => {
+          n += 1
+          throw new Error('401 Incorrect API key provided')
+        },
+        validate: () => [],
+      }),
+    ).rejects.toThrow(/401/)
+    expect(n).toBe(1)
+  })
+
+  it('rethrows a truncation that persists to the last attempt', async () => {
+    await expect(
+      runLoop<string>({
+        stage: 's',
+        maxAttempts: 2,
+        generate: async () => {
+          const e = new Error('output limit')
+          e.name = 'TruncationError'
+          throw e
+        },
+        validate: () => [],
+      }),
+    ).rejects.toThrow(/output limit/)
   })
 
   it('emits abandoned when it gives up', async () => {

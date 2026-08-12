@@ -69,13 +69,21 @@ function checkCitation(claim: Claim, corpus: Corpus): Violation[] {
 
   const known = ids.filter((id) => corpus.has(id))
   if (known.length > 0 && !corpus.supportsQuoteAcross(known, claim.citation.quote)) {
+    // The commonest form of this violation is not fabrication: the model quoted
+    // something real and attached the wrong id. Finding where the words really
+    // came from turns a dead end into a one-line correction — and telling it
+    // only that the quote is wrong invites it to invent a different quote.
+    const elsewhere = corpus.findQuote(claim.citation.quote)
     const cited = corpus.get(known[0])
+
     out.push(
       v(
         'QUOTE_MISMATCH',
         claim.id,
-        `${claim.label} quotes "${truncate(claim.citation.quote, 90)}" but ${known.join(', ')} does not contain that text. ` +
-          `${known[0]} says: "${truncate(cited?.text ?? '', 120)}". Quote verbatim or cite the unit that really says it.`,
+        elsewhere
+          ? `${claim.label} quotes "${truncate(claim.citation.quote, 80)}", which is real but belongs to ${elsewhere.id} (${elsewhere.locator}), not to ${known.join(', ')}. Change the cited evidence id to ${elsewhere.id}.`
+          : `${claim.label} quotes "${truncate(claim.citation.quote, 80)}" but ${known.join(', ')} does not contain that text, and no other evidence unit does either. ` +
+            `${known[0]} says: "${truncate(cited?.text ?? '', 130)}". Copy the quote from the evidence exactly, or drop the claim.`,
       ),
     )
   }
