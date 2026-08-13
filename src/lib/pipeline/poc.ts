@@ -1,11 +1,17 @@
 import { config } from '../config'
 import type { Corpus } from '../evidence'
 import type { LlmClient } from '../llm/types'
-import { APPSPEC_SPEC, type AppSpec } from '../schema/appspec'
+import {
+  APPPLAN_SPEC,
+  SCREEN_SPEC,
+  type AppPlan,
+  type AppSpec,
+  type ScreenOut,
+} from '../schema/appspec'
 import type { Blueprint } from '../schema/blueprint'
 import type { Brief } from '../schema/brief'
 import { runLoop, validateAppSpec, type Violation } from '../verify'
-import type { EventFn } from './events'
+import { mapWithConcurrency, type EventFn } from './events'
 
 /**
  * Generates the clickable POC as a validated AppSpec.
@@ -55,36 +61,52 @@ export function extractEntities(corpus: Corpus, limit = 60): string[] {
     .map(([term]) => term)
 }
 
-const SYSTEM = `You are building a clickable prototype of a proposed application, to be shown to the client in the meeting where the proposal is presented.
-
-You do not write code. You fill in a screen specification, and a renderer draws it. Compose each screen from these blocks:
-
-- statRow   a row of headline figures with optional comparison
+const BLOCK_MENU = `- statRow   a row of headline figures with optional comparison
 - table     rows of records, optionally with a status column and a row action that navigates
 - form      labelled inputs with a submit that navigates
 - kanban    columns of cards, for work moving through states
 - detail    a labelled field list for one record, with actions
 - timeline  dated events, for history and audit
 - chart     a small bar comparison
-- list      primary/secondary lines with an optional badge
+- list      primary/secondary lines with an optional badge`
 
-RULES:
+const SHARED_RULES = `SEED DATA MUST COME FROM THE CLIENT'S OWN MATERIAL. You are given the real names, references, places and systems that appear in their sources. Use them. Never write "Customer A", "Acme Corp", "Product 1", "Lorem ipsum" or an invented company. A prototype showing their own customers and lanes is one the client leans into; a generic one is one they watch.
 
-1. SEED DATA MUST COME FROM THE CLIENT'S OWN MATERIAL. You are given the real names, references, places and systems that appear in their sources. Use them. Never write "Customer A", "Acme Corp", "Product 1", "Lorem ipsum" or an invented company. A prototype showing their own customers and lanes is one they lean into; a generic one is one they watch.
+Numbers must be plausible for this business and consistent between screens.
 
-2. Numbers must be plausible for this business and consistent between screens. If a queue shows 23 open items, do not put 8 rows in the table and call it complete — label it as a page of the 23.
+Show the improvement. If the proposal removes a two-day wait, make the wait visible; if it removes duplicate entry, do not show a re-keying step.`
 
-3. Every screen must be reachable and must lead somewhere. Give tables a rowActionTarget, forms a submitTarget, detail screens an action that goes back. A prototype where nothing is clickable is a picture.
+const PLAN_SYSTEM = `You are planning a clickable prototype of a proposed application, to be shown to the client when the proposal is presented.
 
-4. Build the screens the BLUEPRINT specifies, for the roles it defines. Use the blueprint's role names exactly. Do not invent a role.
+You do not write code. You plan screens, and a later step fills each one in. Available block types:
 
-5. Show the improvement. If the proposal removes a two-day wait, the queue screen should make the wait visible; if it removes duplicate entry, do not show a re-keying step. The first screen should make the point on its own.
+${BLOCK_MENU}
 
-6. SIZE. 3 to 5 screens, each with 1 to 3 blocks. Tables carry 5 to 8 rows — enough to look real, and label the count if the queue is larger. Forms carry at most 8 fields. Kanban columns carry at most 4 cards each.
+${SHARED_RULES}
 
-A tight prototype that renders beats a sprawling one that gets cut off, and an answer that overruns the output limit is discarded in full rather than truncated.
+PLAN RULES:
 
-Ids: screens SC1, SC2…; roles must reuse the blueprint's role ids.`
+1. Build the screens the BLUEPRINT specifies, for the roles it defines. Reuse the blueprint's role ids and names exactly. Do not invent a role.
+2. 3 to 5 screens. Each screen lists 1 to 3 block kinds — that is all you decide here, not their contents.
+3. The prototype must be clickable end to end. Set "leadsTo" so a user can get from the first screen through the flow. The last screen may lead back to the first.
+4. The first screen should make the point of the whole proposal on its own.
+
+Ids: screens SC1, SC2…`
+
+const SCREEN_SYSTEM = `You are filling in ONE screen of a clickable prototype. A renderer draws exactly what you return.
+
+${BLOCK_MENU}
+
+${SHARED_RULES}
+
+SIZE — this matters, and an answer that overruns is discarded in full:
+- tables: 5 to 8 rows, never more. If the real queue is larger, say so in the title rather than listing it.
+- forms: at most 8 fields
+- kanban: at most 4 cards per column
+- timeline: at most 6 events
+- keep every string short; these are cells and labels, not prose
+
+Return ONLY the blocks for the screen you are given, in the order the block kinds are listed.`
 
 export async function generateAppSpec(args: {
   brief: Brief
@@ -133,18 +155,63 @@ export async function generateAppSpec(args: {
       if (e.t === 'retry') onEvent({ t: 'attempt', stage: 'poc', attempt: e.attempt, because: e.because })
     },
     generate: async (feedback, attempt) => {
-      const { data } = await llm.complete<AppSpec>({
+      // Step 1 — plan. Small output: names, roles, and what each screen is made of.
+      const { data: plan } = await llm.complete<AppPlan>({
         role: 'poc',
         stage: 'poc',
         runId,
         engagementId,
         attempt,
-        system: SYSTEM,
+        system: PLAN_SYSTEM,
         user: `${user}${feedback ? `\n\n---\n\n${feedback}` : ''}`,
-        schema: APPSPEC_SPEC,
-        summary: `generate POC spec${attempt > 1 ? ` (attempt ${attempt})` : ''}`,
+        schema: APPPLAN_SPEC,
+        summary: `plan POC screens${attempt > 1 ? ` (attempt ${attempt})` : ''}`,
       })
-      return data
+
+      onEvent({
+        t: 'note',
+        stage: 'poc',
+        text: `${plan.appName}: ${plan.screens.length} screens planned — ${plan.screens.map((s) => s.name).join(', ')}`,
+      })
+
+      // Step 2 — fill each screen in, concurrently. Every call is bounded by
+      // what one screen can contain, which is what stops the overruns.
+      const screens = await mapWithConcurrency(plan.screens, config.concurrency, async (s, i) => {
+        const { data } = await llm.complete<ScreenOut>({
+          role: 'poc',
+          stage: 'poc',
+          runId,
+          engagementId,
+          attempt,
+          system: SCREEN_SYSTEM,
+          user: [
+            `APPLICATION: ${plan.appName} — ${plan.tagline}`,
+            `THIS SCREEN: ${s.id} "${s.name}" — ${s.purpose}`,
+            `SEEN BY: ${s.roleIds.map((r) => plan.roles.find((x) => x.id === r)?.name ?? r).join(', ')}`,
+            `BLOCKS TO PRODUCE, IN ORDER: ${s.blockKinds.join(', ')}`,
+            s.leadsTo
+              ? `The primary action on this screen must navigate to "${s.leadsTo}". Use it as rowActionTarget, submitTarget, or an action target.`
+              : 'This screen does not need to navigate onward.',
+            '',
+            'OTHER SCREENS you may navigate to:',
+            plan.screens.map((x) => `  ${x.id} — ${x.name}`).join('\n'),
+            '',
+            'REAL NAMES, REFERENCES AND SYSTEMS FROM THE CLIENT MATERIAL — seed from these:',
+            entities.join(' · '),
+          ].join('\n'),
+          schema: SCREEN_SPEC,
+          summary: `fill screen ${i + 1}/${plan.screens.length}: ${s.name}`,
+        })
+
+        return { id: s.id, name: s.name, icon: s.icon, roleIds: s.roleIds, blocks: data.blocks }
+      })
+
+      return {
+        appName: plan.appName,
+        tagline: plan.tagline,
+        roles: plan.roles,
+        screens,
+      }
     },
     validate: (spec) => validateAppSpec(spec, blueprint),
   })

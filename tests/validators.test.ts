@@ -472,6 +472,42 @@ describe('validateAppSpec', () => {
     const s = goodAppSpec()
     const block = s.screens[0].blocks[0]
     if (block.kind === 'table') block.rows = [['RFQ-0001', 'Lorem Ipsum GmbH', 'Pricing']]
+    const found = validateAppSpec(s, goodBlueprint()).find((v) => v.code === 'PLACEHOLDER')
+    expect(found?.detail).toContain('Lorem Ipsum GmbH')
+  })
+
+  it('does NOT flag a form whose schema has a field named "placeholder"', () => {
+    // This cost real retries. The check tested JSON.stringify(screen), which
+    // includes KEY names, and the form block has a field literally called
+    // `placeholder` — so every screen containing a form was rejected as
+    // unfinished work.
+    const s = goodAppSpec()
+    s.screens[1].blocks = [
+      {
+        kind: 'form',
+        title: 'New enquiry',
+        submitLabel: 'Create quote',
+        submitTarget: 'SC1',
+        fields: [
+          { label: 'Customer', type: 'text', options: [], placeholder: 'Bergen Seafood AS', required: true },
+          { label: 'Lane', type: 'select', options: ['Bergen to Rotterdam'], placeholder: 'Choose a lane', required: true },
+        ],
+      },
+    ]
+    expect(codes(validateAppSpec(s, goodBlueprint()))).not.toContain('PLACEHOLDER')
+  })
+
+  it('still catches lorem text inside a form field label', () => {
+    const s = goodAppSpec()
+    s.screens[1].blocks = [
+      {
+        kind: 'form',
+        title: 'Lorem ipsum form',
+        submitLabel: 'Go',
+        submitTarget: 'SC1',
+        fields: [{ label: 'Customer', type: 'text', options: [], placeholder: 'name', required: true }],
+      },
+    ]
     expect(codes(validateAppSpec(s, goodBlueprint()))).toContain('PLACEHOLDER')
   })
 
@@ -775,7 +811,7 @@ describe('runLoop', () => {
     expect(n).toBe(1)
   })
 
-  it('rethrows a truncation that persists to the last attempt', async () => {
+  it('throws only when NO attempt ever produced anything usable', async () => {
     await expect(
       runLoop<string>({
         stage: 's',
@@ -788,6 +824,33 @@ describe('runLoop', () => {
         validate: () => [],
       }),
     ).rejects.toThrow(/output limit/)
+  })
+
+  it('falls back to an earlier good attempt when a later one blows up', async () => {
+    // This happened for real: attempt 1 produced a valid POC spec, a false
+    // positive in a validator rejected it, and attempt 2 responded by
+    // generating five times as much and truncating. Losing the stage at that
+    // point discards a perfectly good answer.
+    let n = 0
+    const r = await runLoop<string>({
+      stage: 'poc',
+      maxAttempts: 3,
+      generate: async () => {
+        n += 1
+        if (n === 1) return 'the good spec'
+        const e = new Error('hit its output limit')
+        e.name = 'TruncationError'
+        throw e
+      },
+      validate: (v) =>
+        v === 'the good spec'
+          ? [{ code: 'PLACEHOLDER', claimId: 'SC1', detail: 'false positive', severity: 'ERROR' }]
+          : [],
+    })
+
+    expect(r.value).toBe('the good spec')
+    expect(r.needsHumanReview).toBe(true)
+    expect(r.violations.some((v) => v.detail.includes('output limit'))).toBe(true)
   })
 
   it('emits abandoned when it gives up', async () => {

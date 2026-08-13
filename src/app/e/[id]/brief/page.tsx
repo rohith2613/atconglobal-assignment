@@ -59,7 +59,7 @@ export default async function BriefPage({ params }: { params: Promise<{ id: stri
             presented as clean. {briefViolations.length > 0 && `${briefViolations.length} check${briefViolations.length === 1 ? '' : 's'} still failing:`}
           </p>
           {briefViolations.slice(0, 4).map((v, i) => (
-            <p key={i} className="ap mt-1 normal-case tracking-normal text-[var(--paper-400)]">
+            <p key={i} className="note mt-1 text-[var(--paper-400)]">
               <span className="text-[var(--flag-amber)]">{v.code}</span> · {v.detail}
             </p>
           ))}
@@ -236,7 +236,7 @@ export default async function BriefPage({ params }: { params: Promise<{ id: stri
                   )}
                 </div>
                 <p className="prose-client text-[15px]">{q.question}</p>
-                <p className="ap mt-1.5 normal-case tracking-normal text-[var(--paper-400)]">{q.why}</p>
+                <p className="note mt-1.5 text-[var(--paper-400)]">{q.why}</p>
               </li>
             )
           })}

@@ -31,7 +31,12 @@ const ICON: Record<ScreenIcon, string> = {
 }
 
 export function PocRenderer({ spec }: { spec: AppSpec }) {
-  const [roleId, setRoleId] = useState(spec.roles[0]?.id ?? '')
+  // Open on a role that actually has screens. The blueprint often names a role
+  // like "Customer" who is part of the process but never opens the application,
+  // and starting there shows an empty prototype as the first impression.
+  const [roleId, setRoleId] = useState(
+    () => spec.roles.find((r) => spec.screens.some((s) => s.roleIds.includes(r.id)))?.id ?? spec.roles[0]?.id ?? '',
+  )
 
   const visible = useMemo(
     () => spec.screens.filter((s) => s.roleIds.includes(roleId)),
@@ -40,9 +45,10 @@ export function PocRenderer({ spec }: { spec: AppSpec }) {
 
   const [screenId, setScreenId] = useState(visible[0]?.id ?? spec.screens[0]?.id ?? '')
 
-  // A role switch can hide the open screen. Falling back keeps the prototype on
-  // something rather than rendering an empty frame.
-  const screen = visible.find((s) => s.id === screenId) ?? visible[0] ?? spec.screens[0]
+  // A role switch can hide the open screen; fall back within what this role can
+  // see, and to nothing at all when the role has no screens — rendering another
+  // role's screen under their name would be a lie about who sees what.
+  const screen = visible.find((s) => s.id === screenId) ?? visible[0]
 
   const go = (target: string | null) => {
     if (!target) return
@@ -102,15 +108,19 @@ export function PocRenderer({ spec }: { spec: AppSpec }) {
         ))}
         {visible.length === 0 && (
           <p className="px-2 py-2 text-[12.5px] text-[#6b7280]">
-            This role has no screens in the proposal.
+            No screens for this role — they take part in the process but do not use the application.
           </p>
         )}
       </nav>
 
       <div className="flex flex-col gap-4 bg-[#fafbfc] p-4">
-        {screen?.blocks.map((b, i) => (
-          <BlockView key={i} block={b} onGo={go} />
-        ))}
+        {screen ? (
+          screen.blocks.map((b, i) => <BlockView key={i} block={b} onGo={go} />)
+        ) : (
+          <p className="py-10 text-center text-[12.5px] text-[#6b7280]">
+            Choose a role with screens to see the prototype.
+          </p>
+        )}
       </div>
     </div>
   )

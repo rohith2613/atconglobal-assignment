@@ -85,7 +85,7 @@ export default async function TracePage({ params }: { params: Promise<{ id: stri
             a model told to fix three things will sometimes fix two and break a fourth.
           </p>
           {errors.slice(0, 6).map((v, i) => (
-            <p key={i} className="ap mt-1 normal-case tracking-normal">
+            <p key={i} className="note mt-1">
               <span className="text-[var(--flag-amber)]">{v.code}</span>{' '}
               <span className="text-[var(--teal-600)]">{v.claimId}</span> · {v.detail}
             </p>

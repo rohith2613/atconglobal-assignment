@@ -9,6 +9,7 @@ import type { Blueprint } from '../schema/blueprint'
 import type { Brief } from '../schema/brief'
 import type { GapRow } from '../schema/gaps'
 import type { Conflict, Signal } from '../schema/signals'
+import type { ArtifactKind } from '../types'
 import type { Violation } from '../verify/types'
 import { buildBlueprint } from './blueprint'
 import { STAGES, type EventFn, type RunEvent, type Stage } from './events'
@@ -102,8 +103,18 @@ export async function runPipeline(args: {
   engagementId: string
   inputs?: SourceInput[]
   onEvent?: EventFn
+  /**
+   * Reuse any stage output already on disk instead of regenerating it.
+   *
+   * Each stage persists before the next begins, so a run that dies at the last
+   * stage has seven stages of correct, paid-for work sitting in the database.
+   * Without this, recovering it means paying for all of it again — which is
+   * exactly what happened twice during development, once to an output overrun
+   * and once to a dropped connection.
+   */
+  resume?: boolean
 }): Promise<{ runId: string; needsHumanReview: string[] }> {
-  const { engagementId } = args
+  const { engagementId, resume = false } = args
   const runId = repo.startRun(engagementId)
 
   const bus = busFor(engagementId)
@@ -121,10 +132,26 @@ export async function runPipeline(args: {
   })
 
   const needsHumanReview: string[] = []
+  const briefViolations: Violation[] = []
   const stage = <T>(s: Stage, fn: () => Promise<T>) => runStage(s, fn, emit)
 
+  /** Returns the saved artifact when resuming, otherwise runs the stage. */
+  const stageOrCached = async <T>(s: Stage, kind: ArtifactKind, fn: () => Promise<T>): Promise<T> => {
+    if (resume) {
+      const cached = repo.getArtifact<T>(engagementId, kind)
+      if (cached !== undefined) {
+        emit({ t: 'stage', stage: s, status: 'START' })
+        emit({ t: 'note', stage: s, text: 'reusing the output already saved for this engagement' })
+        emit({ t: 'stage', stage: s, status: 'DONE' })
+        return cached
+      }
+    }
+    return stage(s, fn)
+  }
+
   try {
-    repo.clearTrace(engagementId)
+    // Resuming keeps the existing trace so the run history stays complete.
+    if (!resume) repo.clearTrace(engagementId)
 
     // ---- ingest + segment --------------------------------------------------
 
@@ -189,30 +216,33 @@ export async function runPipeline(args: {
 
     // ---- extract -----------------------------------------------------------
 
-    const { signals: raw, needsHumanReview: extractFlagged } = await stage('extract', () =>
-      extractSignals({ sources, corpus, llm, runId, engagementId, onEvent: emit }),
-    )
-    if (extractFlagged) needsHumanReview.push('extract')
-    repo.saveArtifact(engagementId, 'signals', runId, raw)
+    const raw = await stageOrCached('extract', 'signals', async () => {
+      const r = await extractSignals({ sources, corpus, llm, runId, engagementId, onEvent: emit })
+      if (r.needsHumanReview) needsHumanReview.push('extract')
+      repo.saveArtifact(engagementId, 'signals', runId, r.signals)
+      return r.signals
+    })
 
     // ---- reconcile ---------------------------------------------------------
 
-    const reconciled = await stage('reconcile', () =>
-      reconcile({ signals: raw, corpus, llm, runId, engagementId, onEvent: emit }),
-    )
-    repo.saveArtifact(engagementId, 'reconciled', runId, reconciled)
+    const reconciled = await stageOrCached('reconcile', 'reconciled', async () => {
+      const r = await reconcile({ signals: raw, corpus, llm, runId, engagementId, onEvent: emit })
+      repo.saveArtifact(engagementId, 'reconciled', runId, r)
+      return r
+    })
 
     // ---- gaps --------------------------------------------------------------
 
-    const gaps = await stage('gaps', () =>
-      analyseGaps({ signals: reconciled.signals, corpus, llm, runId, engagementId, onEvent: emit }),
-    )
-    repo.saveArtifact(engagementId, 'gaps', runId, gaps)
+    const gaps = await stageOrCached('gaps', 'gaps', async () => {
+      const r = await analyseGaps({ signals: reconciled.signals, corpus, llm, runId, engagementId, onEvent: emit })
+      repo.saveArtifact(engagementId, 'gaps', runId, r)
+      return r
+    })
 
     // ---- synthesize --------------------------------------------------------
 
-    const brief = await stage('synthesize', () =>
-      synthesiseBrief({
+    const brief = await stageOrCached('synthesize', 'brief', async () => {
+      const r = await synthesiseBrief({
         signals: reconciled.signals,
         conflicts: reconciled.conflicts,
         gaps,
@@ -221,40 +251,47 @@ export async function runPipeline(args: {
         runId,
         engagementId,
         onEvent: emit,
-      }),
-    )
-    if (brief.needsHumanReview) needsHumanReview.push('synthesize')
-    repo.saveArtifact(engagementId, 'brief', runId, brief.brief)
+      })
+      if (r.needsHumanReview) needsHumanReview.push('synthesize')
+      briefViolations.push(...r.violations)
+      repo.saveArtifact(engagementId, 'brief', runId, r.brief)
+      return r.brief
+    })
 
     // ---- blueprint ---------------------------------------------------------
 
-    const blueprint = await stage('blueprint', () =>
-      buildBlueprint({ brief: brief.brief, gaps, llm, runId, engagementId, onEvent: emit }),
-    )
-    if (blueprint.needsHumanReview) needsHumanReview.push('blueprint')
-    repo.saveArtifact(engagementId, 'blueprint', runId, blueprint.blueprint)
+    const blueprint = await stageOrCached('blueprint', 'blueprint', async () => {
+      const r = await buildBlueprint({ brief, gaps, llm, runId, engagementId, onEvent: emit })
+      if (r.needsHumanReview) needsHumanReview.push('blueprint')
+      briefViolations.push(...r.violations)
+      repo.saveArtifact(engagementId, 'blueprint', runId, r.blueprint)
+      return r.blueprint
+    })
 
     // ---- poc ---------------------------------------------------------------
 
-    const poc = await stage('poc', () =>
-      generateAppSpec({
-        brief: brief.brief,
-        blueprint: blueprint.blueprint,
+    const spec = await stageOrCached('poc', 'appspec', async () => {
+      const r = await generateAppSpec({
+        brief,
+        blueprint,
         corpus,
         llm,
         runId,
         engagementId,
         onEvent: emit,
-      }),
-    )
-    if (poc.needsHumanReview) needsHumanReview.push('poc')
-    repo.saveArtifact(engagementId, 'appspec', runId, poc.spec)
+      })
+      if (r.needsHumanReview) needsHumanReview.push('poc')
+      briefViolations.push(...r.violations)
+      repo.saveArtifact(engagementId, 'appspec', runId, r.spec)
+      return r.spec
+    })
+    void spec
 
     // Surviving violations are kept so the UI can show what the loop could not
     // fix, rather than presenting a flawed output as clean.
     repo.saveArtifact(engagementId, 'review', runId, {
       needsHumanReview,
-      violations: [...brief.violations, ...blueprint.violations, ...poc.violations] satisfies Violation[],
+      violations: briefViolations,
     })
 
     repo.finishRun(runId, 'DONE', needsHumanReview)

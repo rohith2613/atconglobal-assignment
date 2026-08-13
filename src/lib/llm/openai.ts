@@ -28,7 +28,12 @@ export class OpenAiClient implements LlmClient {
     apiKey: string,
     private onTrace: TraceSink = () => {},
   ) {
-    this.client = new OpenAI({ apiKey })
+    // Transport-level retries belong here, not in the verification loop. The
+    // loop retries a model that produced a bad ANSWER; this retries a request
+    // that never reached a model at all. A run of eight stages that has already
+    // spent several minutes should not be lost to one dropped connection —
+    // which is exactly what happened during development, at the last stage.
+    this.client = new OpenAI({ apiKey, maxRetries: 4 })
   }
 
   async complete<T>(args: CompleteArgs<T>): Promise<CallResult<T>> {

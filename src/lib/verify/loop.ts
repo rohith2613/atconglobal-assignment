@@ -56,10 +56,31 @@ export async function runLoop<T>(args: LoopArgs<T>): Promise<LoopResult<T>> {
       // response — the "do not hard-fail on the first bad output" principle
       // applied to the generate step and not just the validate step.
       const retryable = retryableFeedback(err, attempt)
-      if (!retryable || attempt >= maxAttempts) throw err
-      feedback = retryable
-      onEvent({ t: 'retry', stage, attempt, because: describe(err) })
-      continue
+
+      if (retryable && attempt < maxAttempts) {
+        feedback = retryable
+        onEvent({ t: 'retry', stage, attempt, because: describe(err) })
+        continue
+      }
+
+      // Out of attempts, or the failure is not one retrying can fix. If an
+      // earlier attempt produced something usable, ship that flagged rather
+      // than losing the stage — throwing away a good answer because a later
+      // one overran is the same mistake in a different place.
+      if (best) {
+        onEvent({ t: 'abandoned', stage, attempts: attempt, violations: best.violations })
+        return {
+          value: best.value,
+          attempts: attempt,
+          needsHumanReview: true,
+          violations: [
+            ...best.violations,
+            { code: 'EMPTY_SECTION', claimId: stage, detail: describe(err), severity: 'WARN' },
+          ],
+        }
+      }
+
+      throw err
     }
 
     const violations = await args.validate(value)
@@ -149,6 +170,12 @@ function retryableFeedback(err: unknown, attempt: number): string | null {
       'A complete small answer is worth far more than a large one that gets cut off, because a cut-off one is discarded entirely.',
     ].join('\n')
   }
+
+  // A connection that never reached the model is a transport fault, and the
+  // SDK has already exhausted its own backoff by the time it surfaces here.
+  // Regenerating with different instructions would not help; failing loudly is
+  // the honest outcome and the run is resumable from its saved artifacts.
+  if (/ENOTFOUND|ECONNRESET|ECONNREFUSED|EAI_AGAIN|socket hang up/i.test(err.message)) return null
 
   if (err.name === 'APIConnectionTimeoutError' || /timed? ?out|aborted/i.test(err.message)) {
     // With output ceilings in place, a request that runs past its deadline is

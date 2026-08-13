@@ -145,6 +145,18 @@ body {
   color: var(--paper-400);
 }
 
+/*
+  Small secondary prose. Distinct from .ap because .ap is uppercase and
+  letterspaced — fine for a three-word label, unreadable for a sentence. Pairing
+  `.ap` with Tailwind's `normal-case` does not work: same specificity, and .ap
+  is defined after the Tailwind import, so .ap wins.
+*/
+.note {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--paper-400);
+}
+
 /* Evidence ids, locators, quote references — mono but not shouting. */
 .id {
   font-family: var(--mono);
@@ -297,6 +309,27 @@ textarea {
 
 .tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/*
+  Mermaid sizes nodes from its own font metrics and ignores the theme's
+  fontSize once htmlLabels are on, which rendered step names larger than the
+  page headings. Constrained here so a diagram sits inside the reading rhythm.
+*/
+.mermaid-host svg {
+  font-family: var(--mono);
+}
+.mermaid-host .nodeLabel,
+.mermaid-host .nodeLabel p,
+.mermaid-host .edgeLabel {
+  font-family: var(--mono) !important;
+  font-size: 11.5px !important;
+  line-height: 1.4 !important;
+}
+.mermaid-host .node rect,
+.mermaid-host .node polygon {
+  rx: 2;
+  ry: 2;
 }
 
 @media (prefers-reduced-motion: reduce) {

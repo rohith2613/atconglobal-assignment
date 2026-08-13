@@ -19,6 +19,28 @@ import type { Violation } from './types'
 
 const PLACEHOLDER_RE = /\b(TBD|TODO|FIXME|XXX|lorem ipsum)\b|\[\.\.\.\]|\[insert|<insert|\bplaceholder\b/i
 
+/**
+ * Every string VALUE in a structure, ignoring keys.
+ *
+ * Testing `JSON.stringify(obj)` was wrong and cost real retries: the AppSpec form
+ * block has a field literally named `placeholder`, so the serialised key matched
+ * the placeholder pattern and every screen containing a form was rejected as
+ * unfinished. The `placeholder` key's own value is a legitimate input hint
+ * ("Choose a lane"), so it is skipped rather than scanned.
+ */
+function stringValues(value: unknown, skipKeys: string[] = ['placeholder']): string[] {
+  if (typeof value === 'string') return [value]
+  if (Array.isArray(value)) return value.flatMap((v) => stringValues(v, skipKeys))
+  if (value && typeof value === 'object') {
+    return Object.entries(value as Record<string, unknown>)
+      .filter(([k]) => !skipKeys.includes(k))
+      .flatMap(([, v]) => stringValues(v, skipKeys))
+  }
+  return []
+}
+
+const hasPlaceholder = (value: unknown) => stringValues(value).some((s) => PLACEHOLDER_RE.test(s))
+
 const v = (
   code: Violation['code'],
   claimId: string,
@@ -286,8 +308,15 @@ export function validateAppSpec(spec: AppSpec, bp: Blueprint): Violation[] {
       }
     }
 
-    if (PLACEHOLDER_RE.test(JSON.stringify(s))) {
-      out.push(v('PLACEHOLDER', s.id, `Screen "${s.name}" contains placeholder text. Seed data must use entities from the client's own corpus.`))
+    if (hasPlaceholder(s)) {
+      const offending = stringValues(s).find((t) => PLACEHOLDER_RE.test(t)) ?? ''
+      out.push(
+        v(
+          'PLACEHOLDER',
+          s.id,
+          `Screen "${s.name}" contains placeholder content: "${truncate(offending, 80)}". Seed data must use the real names, references and lanes from the client's own material.`,
+        ),
+      )
     }
   }
 

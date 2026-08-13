@@ -4,6 +4,7 @@
  *
  *   npm run seed              create + run
  *   npm run seed -- --load    create and load sources, but do not run
+ *   npm run seed -- --resume  keep whatever stages already completed, redo the rest
  *   npm run seed -- --export  after running, write fixtures/demo-run.json
  */
 import 'dotenv/config'
@@ -36,10 +37,17 @@ export function createNordwind(): string {
 async function main() {
   const loadOnly = process.argv.includes('--load')
   const doExport = process.argv.includes('--export')
+  const resume = process.argv.includes('--resume')
   const t0 = Date.now()
 
-  createNordwind()
-  console.log(`Engagement ${NORDWIND_ID} — Nordwind Logistics AS, ${NORDWIND_SOURCES.length} sources\n`)
+  if (!resume) createNordwind()
+  else if (!repo.getEngagement(NORDWIND_ID)) createNordwind()
+
+  console.log(
+    `Engagement ${NORDWIND_ID} — Nordwind Logistics AS, ${NORDWIND_SOURCES.length} sources` +
+      (resume ? ` (resuming; ${repo.listArtifactKinds(NORDWIND_ID).length} stages already saved)` : '') +
+      '\n',
+  )
 
   if (loadOnly) {
     for (const s of NORDWIND_SOURCES) {
@@ -56,7 +64,12 @@ async function main() {
 
   await runPipeline({
     engagementId: NORDWIND_ID,
-    inputs: NORDWIND_SOURCES.map((s) => ({ kind: 'path' as const, path: `${F}/${s.file}`, type: s.type })),
+    resume,
+    // On a resume the sources are already registered and read; re-adding them
+    // would duplicate every evidence unit and break the ids citations point at.
+    inputs: resume
+      ? []
+      : NORDWIND_SOURCES.map((s) => ({ kind: 'path' as const, path: `${F}/${s.file}`, type: s.type })),
     onEvent: (e) => {
       if (e.t === 'stage' && e.status === 'START') console.log(`\n▸ ${STAGE_LABEL[e.stage]}`)
       if (e.t === 'stage' && e.status === 'FAIL') console.log(`  ✗ ${e.detail}`)

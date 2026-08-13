@@ -93,7 +93,7 @@ export default async function GapsPage({ params }: { params: Promise<{ id: strin
                 </Badge>
               </div>
 
-              <p className="ap mt-1.5 normal-case tracking-normal text-[var(--paper-400)]">
+              <p className="note mt-1.5 text-[var(--paper-400)]">
                 {g.evidenceSummary}
                 {g.evidenceIds.length > 0 && (
                   <Cite evidenceIds={g.evidenceIds} label={`${g.questionId} — ${g.question}`} />

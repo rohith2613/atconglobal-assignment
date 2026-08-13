@@ -130,7 +130,7 @@ export default async function BlueprintPage({ params }: { params: Promise<{ id: 
                   →
                 </span>
                 <span className="text-[var(--paper-100)]">{name(bp, f.toScreenId)}</span>
-                <span className="ap ml-1 normal-case tracking-normal">on {f.trigger}</span>
+                <span className="note ml-1">on {f.trigger}</span>
               </li>
             ))}
           </ul>
@@ -139,7 +139,7 @@ export default async function BlueprintPage({ params }: { params: Promise<{ id: 
 
       <section>
         <SectionHead title="Traceability" count={`${bp.features.length} × ${brief.requirements.length}`} />
-        <p className="ap mb-3 normal-case tracking-normal">
+        <p className="note mb-3">
           Read down for a requirement, across for a feature. An empty requirement column is scope the proposal does
           not yet deliver.
         </p>

@@ -108,7 +108,7 @@ export default async function ProcessPage({ params }: { params: Promise<{ id: st
 
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
                   {replaced && (
-                    <span className="ap normal-case tracking-normal">
+                    <span className="note">
                       replaces today&rsquo;s step {replaced.step}, “{replaced.name}”
                     </span>
                   )}
@@ -137,14 +137,14 @@ export default async function ProcessPage({ params }: { params: Promise<{ id: st
       {bp.outOfScope.length > 0 && (
         <section>
           <SectionHead title="Deliberately not doing" count={bp.outOfScope.length} />
-          <p className="ap mb-2 normal-case tracking-normal">
+          <p className="note mb-2">
             Considered and left out, so the client can see it was weighed rather than missed.
           </p>
           <ul className="flex flex-col gap-1.5">
             {bp.outOfScope.map((o, i) => (
               <li key={i} className="panel px-4 py-2.5">
                 <p className="text-[13.5px] text-[var(--paper-100)]">{o.item}</p>
-                <p className="ap mt-0.5 normal-case tracking-normal">{o.reason}</p>
+                <p className="note mt-0.5">{o.reason}</p>
               </li>
             ))}
           </ul>

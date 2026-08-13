@@ -77,25 +77,40 @@ export function Cite({
   if (!ctx || evidenceIds.length === 0) return null
 
   const known = evidenceIds.filter((id) => ctx.units.has(id))
-  const sourceCount = new Set(known.map((id) => ctx.units.get(id)!.sourceId)).size
+  const units = known.map((id) => ctx.units.get(id)!)
+  const sourceCount = new Set(units.map((u) => u.sourceId)).size
 
   if (known.length === 0) {
     return (
-      <span className="cite" style={{ color: 'var(--flag-red)', borderColor: 'var(--flag-red)' }} title="This citation points at evidence that is not in the corpus.">
+      <span
+        className="cite"
+        style={{ color: 'var(--flag-red)', borderColor: 'var(--flag-red)' }}
+        title="This citation points at evidence that is not in the corpus."
+      >
         ⚑ unresolved
       </span>
     )
   }
+
+  // The source TYPE, not the evidence id. "E-src_de8c2cb9-039" is an internal
+  // key and tells a reader nothing; "transcript" tells them where the claim
+  // came from before they click, which is the question they actually have.
+  const label2 =
+    sourceCount > 1
+      ? `${sourceCount} sources`
+      : SOURCE_TYPE_LABEL[units[0].sourceType].toLowerCase().replace(' export', '').replace(' document', '').replace(' recording', '')
+
+  const where = [...new Set(units.map((u) => ctx.sources.get(u.sourceId)?.name ?? u.sourceId))].join(', ')
 
   return (
     <button
       type="button"
       className="cite"
       onClick={() => ctx.open({ evidenceIds: known, quote, label })}
-      title={`See the source — ${sourceCount} source${sourceCount === 1 ? '' : 's'}, ${known.length} passage${known.length === 1 ? '' : 's'}`}
+      title={`${where} — ${units[0].locator}${known.length > 1 ? ` and ${known.length - 1} more` : ''}`}
     >
       <span aria-hidden>❡</span>
-      {sourceCount > 1 ? `${sourceCount} sources` : known[0].replace(/^E-/, '')}
+      {label2}
     </button>
   )
 }
@@ -209,7 +224,17 @@ function SourceText({ source, unit }: { source?: Source; unit: EvidenceUnit }) {
   const full = source?.rawText ?? ''
 
   useEffect(() => {
-    document.getElementById('evidence-hit')?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    // Two frames, and instantly rather than smoothly. The drawer slides in on a
+    // transform, and a smooth scroll started during that animation is dropped —
+    // which left the reader at the top of a 400-line transcript with the passage
+    // they asked for somewhere below the fold. Landing on it directly is also
+    // the better behaviour: this is "turn to the footnote", not a tour.
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() =>
+        document.getElementById('evidence-hit')?.scrollIntoView({ block: 'center', behavior: 'auto' }),
+      ),
+    )
+    return () => cancelAnimationFrame(id)
   }, [unit.id])
 
   if (!full) {
@@ -236,8 +261,13 @@ function SourceText({ source, unit }: { source?: Source; unit: EvidenceUnit }) {
   )
 }
 
+/**
+ * Surrounding context. Recessive enough that the cited span is obviously the
+ * subject, but still readable — a reader checking a citation usually wants the
+ * sentence before and after it, and unreadable context defeats the purpose.
+ */
 const Dim = ({ children }: { children: string }) => (
-  <span className="text-[var(--paper-500)]">{children}</span>
+  <span className="text-[var(--paper-400)]">{children}</span>
 )
 
 /** Inline quotation of the client's own words, in the serif voice. */

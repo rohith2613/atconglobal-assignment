@@ -148,7 +148,36 @@ export const ScreenIcon = z.enum([
 ])
 export type ScreenIcon = z.infer<typeof ScreenIcon>
 
+export const Screen = z.object({
+  id: z.string().min(1),
+  name: z.string().min(2),
+  icon: ScreenIcon,
+  /** Which roles see this screen. Drives the role switcher in the UI. */
+  roleIds: z.array(z.string()).min(1),
+  blocks: z.array(Block).min(1),
+})
+export type Screen = z.infer<typeof Screen>
+
 export const AppSpec = z.object({
+  appName: z.string().min(2),
+  tagline: z.string().min(5),
+  roles: z.array(z.object({ id: z.string().min(1), name: z.string().min(2) })).min(1),
+  screens: z.array(Screen).min(2),
+})
+export type AppSpec = z.infer<typeof AppSpec>
+export const APPSPEC_SPEC = spec('app_spec', AppSpec)
+
+/**
+ * The POC is generated in two steps rather than one.
+ *
+ * A single call for the whole application overran its output budget on every
+ * attempt against the real corpus — sometimes it wrote a tight spec, sometimes
+ * it wrote five times as much, and a truncated spec is discarded in full.
+ * Asking for a plan first and then one screen at a time bounds every call by
+ * construction instead of by asking the model nicely, lets the screens generate
+ * concurrently, and confines a failure to one screen rather than the lot.
+ */
+export const AppPlan = z.object({
   appName: z.string().min(2),
   tagline: z.string().min(5),
   roles: z.array(z.object({ id: z.string().min(1), name: z.string().min(2) })).min(1),
@@ -158,12 +187,19 @@ export const AppSpec = z.object({
         id: z.string().min(1),
         name: z.string().min(2),
         icon: ScreenIcon,
-        /** Which roles see this screen. Drives the role switcher in the UI. */
         roleIds: z.array(z.string()).min(1),
-        blocks: z.array(Block).min(1),
+        purpose: z.string().min(10),
+        /** What this screen is made of. The next step fills these in. */
+        blockKinds: z.array(z.enum(['statRow', 'table', 'form', 'kanban', 'detail', 'timeline', 'chart', 'list'])).min(1),
+        /** Screen this one's primary action should lead to, or null. */
+        leadsTo: z.string().nullable(),
       }),
     )
     .min(2),
 })
-export type AppSpec = z.infer<typeof AppSpec>
-export const APPSPEC_SPEC = spec('app_spec', AppSpec)
+export type AppPlan = z.infer<typeof AppPlan>
+export const APPPLAN_SPEC = spec('app_plan', AppPlan)
+
+export const ScreenOut = z.object({ blocks: z.array(Block).min(1) })
+export type ScreenOut = z.infer<typeof ScreenOut>
+export const SCREEN_SPEC = spec('screen_blocks', ScreenOut)
