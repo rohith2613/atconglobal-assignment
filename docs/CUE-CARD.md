@@ -1,154 +1,270 @@
-# Cue card — read this while recording
+# SCRIPT — read this out loud while recording
 
-Keep this on your phone or a second screen. Bold = what you click. Quoted = roughly what you say.
-You do not need to say it word for word. Say it in your own words, in your own accent, at your own pace.
+**How to use this:** Open it on your phone. Scroll as you go.
 
-If you fluff a line, pause for two seconds and say it again. You can cut it later, or leave it — nobody minds.
+- 👆 **DO** = what to click on the laptop
+- 🗣️ **SAY** = read this out loud, exactly as written
 
----
+Speak slowly. Pause at every full stop. Total time: about 7 minutes.
 
-### 0:00 — Home page
-
-**Just sit on the home page. Don't click yet.**
-
-> "This is Prism, built for the ATCON case study.
->
-> The problem it solves: a consultant starts an engagement with a pile of mixed material. Meeting transcripts, a WhatsApp group, a process PDF, screenshots of the system being replaced, a recorded call. Reading all of that and turning it into a requirement is a week of senior time.
->
-> And three things reliably go wrong. Contradictions between sources get missed. Nobody tracks the questions that were never asked. And by the time it's written down, nobody can say which meeting a given requirement came from.
->
-> Nordwind Logistics is a fictional freight forwarder. I wrote its material myself so that it contains problems worth finding."
-
-**Click "Nordwind Logistics AS"**
+If you make a mistake, stop, wait 3 seconds, and say that sentence again. You can cut it later.
 
 ---
 
-### 0:50 — Sources
+## ▶ START RECORDING NOW
 
-> "Nine sources, six different formats.
+👆 **DO:** You are on the home page. Do not click anything yet. Wait 3 seconds.
+
+🗣️ **SAY:**
+
+> "Hello. My name is Rohith.
 >
-> Five of these are parsed with plain code. Two are not — the screenshots go through a vision model, and this call recording is a real two-minute audio file that Whisper transcribed. It's genuinely audio, not a placeholder.
+> This is my submission for the ATCON Global case study.
 >
-> That produced two hundred and thirty-three citable passages. Every claim you're about to see points back at one of them."
+> I have built an application called Prism.
+>
+> Let me first explain the problem it solves.
+>
+> When a consultant starts a new project, the client gives them a pile of mixed material. Meeting transcripts. WhatsApp messages. A process document. Screenshots of their old system. Sometimes a recorded phone call.
+>
+> Somebody has to read all of that, and turn it into a clear requirement.
+>
+> That takes about a week of senior time. And three things go wrong every single time.
+>
+> Number one. The client's own sources contradict each other, and nobody notices.
+>
+> Number two. Nobody keeps track of the questions that were never asked.
+>
+> Number three. Once the document is written, nobody can say which meeting a requirement came from.
+>
+> Prism solves all three.
+>
+> The client here is Nordwind Logistics. They are a freight forwarding company. They are not real. I wrote all their material myself, so that it contains real problems worth finding."
 
-**Point at the Pipeline panel**
-
-> "Eight stages, and each one is checked before the next runs. I'll come back to that at the end."
+👆 **DO:** Click on **Nordwind Logistics AS**
 
 ---
 
-### 1:35 — Discovery brief  ← **FIRST BIG MOMENT**
+## ▶ PAGE 1 — SOURCES
 
-**Click "02 Discovery brief". Scroll slowly to "What it costs them".**
+🗣️ **SAY:**
 
-> "This is the brief a consultant would write. The goal, how the process works today, what it's costing them, the requirements, and what we still need to ask.
+> "This is everything the client gave us.
 >
-> Every single claim has one of these little markers."
-
-**Click any amber citation chip. Wait for the drawer. Let it sit for a second.**
-
-> "And that opens the source. Not a summary of the source — the actual transcript, scrolled to the exact passage the claim came from, highlighted in place, with the speaker and the timestamp.
+> Nine sources, in six different formats.
 >
-> This is the part that makes everything else usable. When a client argues about scope in week six, you don't argue back. You open the claim."
+> Five of these are read using normal code. Two are not.
+>
+> The screenshots are read by a vision model.
+>
+> And this one, the call recording, is a real two minute audio file. It was transcribed using Whisper. It is genuine audio, not a fake placeholder.
+>
+> All of this produced two hundred and thirty three separate passages that can be quoted.
+>
+> Every claim you are about to see points back to one of them."
 
-**Press Escape. Find a chip that says "2 sources" and click it.**
+👆 **DO:** Point the mouse at the **Pipeline** box in the middle
 
-> "Where a claim is backed by two different sources, you can step between them with the arrow keys. That's also what the confidence grade means — HIGH means more than one source said it, not that the model felt confident."
+🗣️ **SAY:**
 
-**Press Escape. Hover over any claim so the ✓ ✎ ✕ buttons appear.**
+> "The analysis runs in eight stages. Each stage is checked before the next one starts. I will come back to that at the end."
 
-> "And a consultant can accept, correct, or reject anything here. That judgement is stored separately from the model's output, so re-running the analysis doesn't wipe it."
+👆 **DO:** Click **02 Discovery brief** in the left sidebar
 
 ---
 
-### 3:10 — Contradictions  ← **SECOND BIG MOMENT**
+## ▶ PAGE 2 — DISCOVERY BRIEF ⭐ IMPORTANT
 
-**Click "03 Contradictions"**
+👆 **DO:** Scroll down slowly to the section called **What it costs them**
 
-> "This is the finding I care most about."
+🗣️ **SAY:**
 
-**Read the go-live one — point at side A, then side B.**
-
-> "The WhatsApp group says the board wants it live before peak season. End of October, non-negotiable.
+> "This is the brief that a consultant would normally write by hand.
 >
-> The second transcript has the Head of Operations saying nothing goes live in October, Q1 at the earliest.
+> The goal. How the process works today. What it is costing them. The requirements. And what we still need to ask.
 >
-> Neither document contains a contradiction. It only exists across the whole pack. That's exactly why a consultant reading files one at a time misses it — and why it turns up in week three as a change request.
+> Now look carefully. Every claim has a small orange marker next to it."
+
+👆 **DO:** Click on any **orange marker**. Wait for the panel to open. Wait 2 seconds.
+
+🗣️ **SAY:**
+
+> "And that opens the source.
 >
-> Both sides quote the source word for word. If a contradiction's quote can't be verified against the evidence, it's thrown away rather than shown. I'd rather miss one than send someone to a client asking about something nobody said."
+> This is not a summary. This is the actual transcript.
+>
+> It has scrolled to the exact sentence the claim came from. It is highlighted. And it shows who said it, and at what time.
+>
+> This is the most important part of the whole project.
+>
+> When a client argues about scope in week six, you do not argue back. You just open the claim and show them where it came from."
 
-**Point at the "Ask the client" box**
+👆 **DO:** Press the **Escape** key
 
-> "And that question is written to be sent as it is."
+👆 **DO:** Find a marker that says **2 sources** and click it
+
+🗣️ **SAY:**
+
+> "When a claim is supported by two different sources, you can move between them using the arrow keys.
+>
+> That is also what the confidence level means here. High confidence means more than one source said it. It does not mean the model felt confident."
+
+👆 **DO:** Press **Escape**. Then move your mouse over any claim so the tick, pencil and cross buttons appear.
+
+🗣️ **SAY:**
+
+> "And the consultant stays in control. You can accept a claim, correct it, or reject it.
+>
+> That decision is stored separately from the model's output. So if you run the analysis again, your judgement is not lost."
+
+👆 **DO:** Click **03 Contradictions** in the left sidebar
 
 ---
 
-### 4:25 — Gap radar
+## ▶ PAGE 3 — CONTRADICTIONS ⭐ MOST IMPORTANT
 
-**Click "04 Gap radar"**
+🗣️ **SAY:**
 
-> "Every engagement is scored against the same thirty questions, so a whole missing area can't slip past. The row is there whether the sources mention it or not."
-
-**Point at Compliance and Non-functional — the red ones**
-
-> "Data residency — never mentioned once, and this client operates across Norway and the Netherlands.
+> "This is the feature I am most proud of.
 >
-> Authentication — never mentioned.
+> Look at the first one. Go live date.
 >
-> And this one is the realistic kind. Their system Winfreight comes up constantly, and their own IT lead says on the record that he doesn't know what it exposes."
+> On the left, from the WhatsApp group. The board wants the system live before peak season. End of October. Not negotiable.
+>
+> On the right, from the second meeting transcript. The Head of Operations says nothing can go live in October, because October is their busiest month. She says Q1 next year.
+>
+> Now here is the important point.
+>
+> Neither document contains a contradiction. Each one is fine on its own.
+>
+> The contradiction only exists when you read the whole pack together.
+>
+> That is exactly why a consultant reading files one by one will miss it. And that is why it comes back in week three as a change request.
+>
+> Both sides quote the source word for word. If the system cannot verify a quote against the evidence, it throws the contradiction away instead of showing it. I would rather miss one than send someone to a client asking about something nobody said."
 
-**Scroll to the bottom box**
+👆 **DO:** Point at the blue **Ask the client** box
 
-> "That's the actual deliverable. Every unanswered question, worst first, ready to paste into an email."
+🗣️ **SAY:**
+
+> "And this question is written so the consultant can copy it and send it to the client directly."
+
+👆 **DO:** Click **04 Gap radar**
 
 ---
 
-### 5:20 — Process and Blueprint
+## ▶ PAGE 4 — GAP RADAR
 
-**Click "05 As-is / To-be"**
+🗣️ **SAY:**
 
-> "Every step of how they work today gets a decision — keep it, simplify it, automate it, or remove it — with the reason and the pain point it fixes.
+> "This page answers a different question. What has nobody asked yet?
 >
-> The green ones are automated. The Friday reconciliation gets removed entirely, and the reason says why: it only exists because they type every quote twice."
+> Every project is scored against the same thirty questions. So an entire missing area cannot slip through. The row appears whether the client mentioned it or not."
 
-**Click "06 Solution blueprint", scroll to the matrix at the bottom**
+👆 **DO:** Point at the **red bars** on the right side
 
-> "And this is the check that stops a proposal inventing work nobody asked for. Every feature has to trace back to a requirement the client actually stated. If it traces to nothing, it gets caught before it reaches the client."
+🗣️ **SAY:**
+
+> "Look at these red ones.
+>
+> Data residency. Never mentioned even once. And this client operates in both Norway and the Netherlands, so it matters.
+>
+> Authentication. How users will log in. Never mentioned.
+>
+> And this one is very realistic. Their system is called Winfreight. It is discussed constantly. But their own IT lead says, on the record, that he does not know what it connects to."
+
+👆 **DO:** Scroll all the way down to the box at the bottom
+
+🗣️ **SAY:**
+
+> "And this is the real deliverable. Every unanswered question, worst first, ready to paste into an email to the client."
+
+👆 **DO:** Click **05 As-is / To-be**
 
 ---
 
-### 6:10 — Prototype
+## ▶ PAGE 5 — PROCESS
 
-**Click "07 Prototype". Click an "Open" button in the table. Then change the role dropdown.**
+🗣️ **SAY:**
 
-> "This is generated from the blueprint, and seeded with their own customers and lanes — not placeholder data. That's the difference between a client watching a demo and leaning into one.
+> "On the left is how the client works today. On the right is how they would work with the new system.
 >
-> And the model didn't write this code. It filled in a validated specification, and a renderer draws it. So nothing generated is ever executed, and it can't fail to load."
+> Every single step gets a decision. Keep it. Simplify it. Automate it. Or remove it completely.
+>
+> The green boxes are automated.
+>
+> And notice the Friday reconciliation gets removed entirely. The reason is written there. It only exists because they currently type every quote twice."
+
+👆 **DO:** Click **06 Solution blueprint**, then scroll to the **table at the very bottom**
+
+🗣️ **SAY:**
+
+> "And this table is a check that stops the proposal from inventing work.
+>
+> Every feature must trace back to a requirement the client actually stated.
+>
+> If a feature traces back to nothing, the system catches it before it ever reaches the client."
+
+👆 **DO:** Click **07 Prototype**
 
 ---
 
-### 6:45 — Run trace  ← **THIRD BIG MOMENT**
+## ▶ PAGE 6 — PROTOTYPE
 
-**Click "08 Run trace". Scroll down to the big table.**
+👆 **DO:** Click one of the blue **Open** buttons in the table
 
-> "Last thing. Every model call, what it cost, and — these amber rows — every output the system rejected and regenerated.
->
-> Those are quotes that didn't actually appear in the evidence they cited. Cheap deterministic checks caught them for nothing, fed the failure back as the instruction, and the model rewrote it. Where it couldn't fix something in three tries, it says so instead of pretending the output is clean.
->
-> That's the whole argument. The model is treated as an unreliable part inside a control loop, not as the system itself. It's why the citations can be trusted.
->
-> Thanks for watching."
+👆 **DO:** Then change the dropdown at the top right to a different role
 
-**Stop recording.**
+🗣️ **SAY:**
+
+> "This is a working prototype, generated automatically from the plan.
+>
+> And notice the data. These are the client's real customers, and their real shipping routes. Not fake placeholder names.
+>
+> That is the difference between a client watching a demo, and a client leaning forward.
+>
+> One important point. The model did not write this code.
+>
+> It filled in a specification, and my own code draws the screens. So nothing the AI generates is ever executed. And it can never fail to load."
+
+👆 **DO:** Click **08 Run trace**
 
 ---
 
-## If something goes wrong mid-take
+## ▶ PAGE 7 — RUN TRACE ⭐ IMPORTANT
 
-- **A page looks blank** — refresh once (F5). Everything is pre-loaded so it'll be instant.
-- **You lose your place** — the left sidebar is numbered 01 to 08. Just go in order.
-- **You want to start over** — stop recording, and in the terminal press Ctrl+C, then `npm run reset`, then `npm run dev`. Fresh state.
+👆 **DO:** Scroll down to the big table
 
-## The one-minute version, if you'd rather do a short one
+🗣️ **SAY:**
 
-> "Prism reads a client's scattered material and works out what they need — with every claim traceable to the exact sentence it came from. It finds where their own sources contradict each other, which is something no single document contains. It lists what nobody has asked yet. And it ends with a clickable prototype seeded from their own data. Every stage checks its own output against the evidence before the next one runs, and shows you what it rejected."
+> "This is the last page, and it explains how everything you just saw was produced.
+>
+> Every call to the model. What it cost. How long it took.
+>
+> And look at these orange rows.
+>
+> Those are answers the system rejected and generated again.
+>
+> They were rejected because a quote did not actually appear in the evidence it claimed to come from. Cheap automatic checks caught that for free. The failure was then sent back to the model as the instruction, and it rewrote the answer.
+>
+> And when it cannot fix something after three tries, it says so honestly, instead of pretending the output is clean.
+>
+> That is the whole idea behind this project.
+>
+> The AI model is treated as an unreliable part inside a control loop. It is not the system itself.
+>
+> That is why the citations can be trusted.
+>
+> Thank you for watching."
+
+## ▶ STOP RECORDING
+
+---
+
+# If something goes wrong
+
+**Page is blank** → the black window closed. Open `START-DEMO.bat` again, wait, refresh.
+
+**You lost your place** → the left sidebar is numbered 01 to 08. Just go in order.
+
+**You want to restart** → stop recording and start again. You do not need one perfect take.
