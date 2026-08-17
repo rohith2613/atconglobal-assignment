@@ -114,7 +114,17 @@ Cheap checks caught it, fed the failure back, and the model rewrote it.
 
 So the model is an unreliable part inside a control loop. Not the system itself.
 
-That's why the citations can be trusted.
+That's why the citations can be trusted."
+
+---
+
+## 8️⃣ CLOSE — the tech, in one line
+
+🗣️ "Quickly on the stack. It's Next.js and TypeScript, so the frontend and the backend are one codebase. SQLite for storage. OpenAI for the models — a cheap one for the bulk work, a stronger one only for writing the brief.
+
+Every model call returns a strict schema, and every claim is checked against the evidence before it's shown.
+
+The README has the full architecture, my assumptions, and the mistakes I made along the way.
 
 Thanks for watching."
 
